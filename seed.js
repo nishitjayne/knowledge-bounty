@@ -43,7 +43,7 @@ const request = (method, path, body) => new Promise((resolve, reject) => {
 const OPEN_BOUNTIES = [
   {
     title: "WebSocket keeps dropping after browser tab goes to sleep — reconnect logic not working",
-    reward: "☕ Starbucks $15 gift card",
+    reward: "☕ Starbucks ₹15 gift card",
     category: "Engineering",
     timeEstimate: "1H",
     requesterName: "Arjun M.",
@@ -57,7 +57,7 @@ const OPEN_BOUNTIES = [
   },
   {
     title: "Need a 5-email cold outreach sequence for our SaaS launch targeting early-stage founders",
-    reward: "💰 $20 Amazon gift card",
+    reward: "💰 ₹20 Amazon gift card",
     category: "Marketing",
     timeEstimate: "2H",
     requesterName: "Rohan K.",
@@ -71,7 +71,7 @@ const OPEN_BOUNTIES = [
   },
   {
     title: "MongoDB $lookup with nested array returning duplicates — can't figure out the $unwind stage",
-    reward: "☕ Starbucks $10 gift card",
+    reward: "☕ Starbucks ₹10 gift card",
     category: "Engineering",
     timeEstimate: "45M",
     requesterName: "Dev O.",
@@ -83,7 +83,7 @@ const CLAIMED_BOUNTIES = [
   {
     bounty: {
       title: "Tailwind CSS purge stripping dynamically constructed class names in production build",
-      reward: "🎮 $15 Steam wallet code",
+      reward: "🎮 ₹15 Steam wallet code",
       category: "Engineering",
       timeEstimate: "30M",
       requesterName: "Siddharth B.",
@@ -123,7 +123,7 @@ const CLAIMED_BOUNTIES = [
   {
     bounty: {
       title: "Structure a 30-60-90 day onboarding plan for a senior product designer joining Monday",
-      reward: "💳 $25 Swiggy voucher",
+      reward: "💳 ₹25 Swiggy voucher",
       category: "Design",
       timeEstimate: "2H",
       requesterName: "Ritika P.",
@@ -140,7 +140,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "React Query staleTime not caching — refetching on every component mount",
-      reward: "☕ Starbucks $10 gift card",
+      reward: "☕ Starbucks ₹10 gift card",
       category: "Engineering",
       timeEstimate: "30M",
       requesterName: "Aman V.",
@@ -160,7 +160,7 @@ const RESOLVED_BOUNTIES = [
       requesterName: "Vikram CEO.",
     },
     messages: [
-      { sender: "Vikram CEO.", text: "Raised $4M. Need 3 posts: different angles, founder tone, not press release style." },
+      { sender: "Vikram CEO.", text: "Raised ₹4M. Need 3 posts: different angles, founder tone, not press release style." },
       { sender: "Expert", text: "Sent 3 drafts: 1. The journey story, 2. Team appreciation, 3. What comes next. Check your DM." },
       { sender: "Vikram CEO.", text: "The journey one is perfect. Using verbatim. Starbucks code in your inbox 🙏" },
     ],
@@ -196,7 +196,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "JWT token expiring in 15 mins despite expiresIn: '7d' — users keep getting logged out",
-      reward: "☕ Starbucks $15 gift card",
+      reward: "☕ Starbucks ₹15 gift card",
       category: "Engineering",
       timeEstimate: "30M",
       requesterName: "Rahul S.",
@@ -224,7 +224,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "1-pager marketing brief for B2B SaaS compliance feature — audience is CTOs",
-      reward: "💰 $25 gift card of your choice",
+      reward: "💰 ₹25 gift card of your choice",
       category: "Marketing",
       timeEstimate: "2H",
       requesterName: "Simran M.",
@@ -238,7 +238,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "Vercel serverless timing out on MongoDB aggregation — hitting 10s function limit",
-      reward: "🎮 $20 Steam wallet code",
+      reward: "🎮 ₹20 Steam wallet code",
       category: "Engineering",
       timeEstimate: "1H",
       requesterName: "Karan P.",
@@ -280,7 +280,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "3-email cold outreach sequence for recruiting senior engineers — startup vs Google/Meta",
-      reward: "🎁 $30 Amazon voucher",
+      reward: "🎁 ₹30 Amazon voucher",
       category: "Marketing",
       timeEstimate: "2H",
       requesterName: "Nidhi Talent.",
@@ -294,7 +294,7 @@ const RESOLVED_BOUNTIES = [
   {
     bounty: {
       title: "Infinite scroll stuttering on iOS Safari — requestAnimationFrame not helping",
-      reward: "☕ Starbucks $20 gift card",
+      reward: "☕ Starbucks ₹20 gift card",
       category: "Engineering",
       timeEstimate: "1H",
       requesterName: "Tanya F.",
