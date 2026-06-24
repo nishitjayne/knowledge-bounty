@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {
   Trophy, Plus, Zap, X, Send,
-  Target, Palette, CheckCircle2, Flame, Clock, Tag
+  Target, Palette, CheckCircle2, Flame, Clock, Tag, ChevronDown
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './index.css';
@@ -16,6 +16,24 @@ const THEMES = {
   dark:         { name: 'Dark',         bg: '#121212', card: '#1e1e1e', text: '#ffffff', subText: '#a0a0a0', accent: '#333', button: '#bb86fc', highlight: '#03dac6', zap: '#cf6679', orb1: '#bb86fc', orb2: '#03dac6' },
   spring:       { name: 'Spring',       bg: '#fdfbfb', card: '#ffffff', text: '#2d3436', subText: '#636e72', accent: '#ffeaa7', button: '#00b894', highlight: '#fdcb6e', zap: '#e17055', orb1: '#00b894', orb2: '#fdcb6e' },
   haze:         { name: 'Haze',         bg: '#2c3e50', card: '#34495e', text: '#ecf0f1', subText: '#bdc3c7', accent: '#7f8c8d', button: '#9b59b6', highlight: '#e74c3c', zap: '#f1c40f', orb1: '#9b59b6', orb2: '#e74c3c' },
+};
+
+const hexToRgb = (hex) => {
+  if (!hex) return '99,102,241';
+  const cleaned = hex.replace('#', '');
+  if (cleaned.length === 3) {
+    const r = parseInt(cleaned[0] + cleaned[0], 16);
+    const g = parseInt(cleaned[1] + cleaned[1], 16);
+    const b = parseInt(cleaned[2] + cleaned[2], 16);
+    return `${r},${g},${b}`;
+  }
+  if (cleaned.length === 6) {
+    const r = parseInt(cleaned.slice(0, 2), 16);
+    const g = parseInt(cleaned.slice(2, 4), 16);
+    const b = parseInt(cleaned.slice(4, 6), 16);
+    return `${r},${g},${b}`;
+  }
+  return '99,102,241';
 };
 
 function App() {
@@ -223,7 +241,7 @@ function App() {
 
               {/* Post Form */}
               <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-8 transition-theme" style={cardStyle}>
+                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-8 transition-theme" style={{ ...cardStyle, '--accent-rgb': hexToRgb(theme.button) }}>
                   <h2 className="text-xs font-black uppercase mb-6 flex items-center gap-2" style={{ color: theme.subText }}>
                     <Plus size={16} /> New Broadcast
                   </h2>
@@ -244,26 +262,36 @@ function App() {
                       onChange={e => setReward(e.target.value)}
                       required
                     />
-                    <select
-                      className="kb-input transition-theme"
-                      style={inputStyle}
-                      value={category}
-                      onChange={e => setCategory(e.target.value)}
-                    >
-                      {['Engineering','Design','Research','Marketing','Finance','Other'].map(c => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                    </select>
-                    <select
-                      className="kb-input transition-theme"
-                      style={inputStyle}
-                      value={time}
-                      onChange={e => setTime(e.target.value)}
-                    >
-                      {['15M','30M','1H','2H','4H'].map(t => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
+                    <div className="select-wrapper">
+                      <select
+                        className="kb-input transition-theme"
+                        style={inputStyle}
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                      >
+                        {['Engineering','Design','Research','Marketing','Finance','Other'].map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <span className="select-arrow" style={{ color: theme.text }}>
+                        <ChevronDown size={18} />
+                      </span>
+                    </div>
+                    <div className="select-wrapper">
+                      <select
+                        className="kb-input transition-theme"
+                        style={inputStyle}
+                        value={time}
+                        onChange={e => setTime(e.target.value)}
+                      >
+                        {['5M','10M','15M','30M','1H','2H','4H'].map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                      <span className="select-arrow" style={{ color: theme.text }}>
+                        <ChevronDown size={18} />
+                      </span>
+                    </div>
                     <button
                       type="submit"
                       className="btn-action"
@@ -400,11 +428,11 @@ function BountyCard({ b, onAction, onChat, theme, index }) {
 
   return (
     <div
-      className={`bounty-card animate-slide-up ${delayClass} ${isOpen ? 'is-open' : ''} ${isResolved ? 'resolved-glow' : ''} transition-theme`}
+      className={`bounty-card animate-slide-up ${delayClass} ${isOpen ? 'is-open' : ''} ${isClaimed ? 'active-mission' : ''} ${isResolved ? 'resolved-glow' : ''} transition-theme`}
       style={{
         backgroundColor: theme.card,
         borderColor: isResolved ? theme.highlight : isClaimed ? theme.zap : theme.accent,
-        '--accent-rgb': '99,102,241',
+        '--accent-rgb': isClaimed ? hexToRgb(theme.zap) : hexToRgb(theme.highlight),
         '--highlight-rgb': '251,191,36',
         '--highlight-color': theme.highlight,
       }}

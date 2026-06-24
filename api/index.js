@@ -76,7 +76,7 @@ const BountySchema = new mongoose.Schema(
     title:         { type: String, required: true, maxlength: 200, trim: true },
     reward:        { type: String, required: true, maxlength: 100, trim: true },
     category:      { type: String, default: 'Engineering', enum: ['Engineering','Design','Research','Marketing','Finance','Other'] },
-    timeEstimate:  { type: String, default: '15M',         enum: ['15M','30M','1H','2H','4H'] },
+    timeEstimate:  { type: String, default: '15M',         enum: ['5M','10M','15M','30M','1H','2H','4H'] },
     status:        { type: String, default: 'open',         enum: ['open','claimed','resolved'], index: true },
     requesterName: { type: String, default: 'Sarah J.',    maxlength: 60 },
     proposedTime:  { type: String, default: null },
