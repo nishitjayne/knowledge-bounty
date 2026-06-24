@@ -1,3 +1,4 @@
+// Knowledge Bounty API — rebuilt: 2026-06-25
 'use strict';
 
 const express    = require('express');
@@ -111,7 +112,8 @@ app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
-  } catch {
+  } catch (err) {
+    console.error('[DB CONNECT ERROR]', err);
     res.status(503).json({ error: 'Database unavailable. Try again shortly.' });
   }
 });
