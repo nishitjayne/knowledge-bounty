@@ -510,7 +510,7 @@ function CustomDropdown({ value, onChange, options, theme, placeholder }) {
   };
 
   return (
-    <div className="custom-dropdown-container" ref={dropdownRef}>
+    <div className="custom-dropdown-container" ref={dropdownRef} style={{ zIndex: isOpen ? 100 : 10 }}>
       {/* Trigger Button */}
       <div
         className={`kb-input flex items-center justify-between cursor-pointer transition-theme select-none ${isOpen ? 'active' : ''}`}

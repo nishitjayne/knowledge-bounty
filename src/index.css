@@ -451,4 +451,5 @@ body {
 /* Subtle background overlay gradient for broadcast bounty card */
 .kb-form-card {
   background-image: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04) 0%, rgba(var(--accent-rgb), 0.01) 100%) !important;
+  overflow: visible !important;
 }
