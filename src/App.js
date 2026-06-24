@@ -77,7 +77,7 @@ function App() {
 
   const handleAction = async (id, action) => {
     try {
-      await axios.patch(`${API}/bounties/${id}/${action}`);
+      await axios.patch(`${API}/bounties/${id}/${action}`); // now /claim or /resolve
       if (action === 'resolve') {
         confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: [theme.highlight, theme.zap, theme.button] });
         setNotification("🏆 Mission Complete!");
