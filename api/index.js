@@ -78,7 +78,7 @@ const BountySchema = new mongoose.Schema(
     category:      { type: String, default: 'Engineering', enum: ['Engineering','Design','Research','Marketing','Finance','Other'] },
     timeEstimate:  { type: String, default: '15M',         enum: ['5M','10M','15M','30M','1H','2H','4H'] },
     status:        { type: String, default: 'open',         enum: ['open','claimed','resolved'], index: true },
-    requesterName: { type: String, default: 'Sarah J.',    maxlength: 60 },
+    requesterName: { type: String, default: 'Nishit J.',    maxlength: 60 },
     proposedTime:  { type: String, default: null },
     meetingStatus: { type: String, default: 'none' },
     // STRUCTURAL: Messages as a sub-document array — cap at 200 to prevent unbounded growth
@@ -186,8 +186,8 @@ app.post(
   }),
   async (req, res) => {
     try {
-      const { title, reward, category, timeEstimate } = req.body;
-      const bounty = await Bounty.create({ title, reward, category, timeEstimate });
+      const { title, reward, category, timeEstimate, requesterName } = req.body;
+      const bounty = await Bounty.create({ title, reward, category, timeEstimate, requesterName });
       res.status(201).json(bounty.toObject({ versionKey: false }));
     } catch (e) {
       if (e.name === 'ValidationError') {

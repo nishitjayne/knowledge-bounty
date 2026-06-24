@@ -43,6 +43,7 @@ function App() {
   const [reward, setReward]               = useState('');
   const [category, setCategory]           = useState('');
   const [time, setTime]                   = useState('15M');
+  const [requesterName, setRequesterName] = useState(() => localStorage.getItem('kb_user_name') || 'Nishit J.');
   const [view, setView]                   = useState('market');
   const [selectedQuest, setSelectedQuest] = useState(null);
   const [msg, setMsg]                     = useState('');
@@ -85,7 +86,14 @@ function App() {
     e.preventDefault();
     if (!title || !reward) return;
     try {
-      await axios.post(`${API}/bounties`, { title, reward, category: category || 'Engineering', timeEstimate: time });
+      localStorage.setItem('kb_user_name', requesterName);
+      await axios.post(`${API}/bounties`, { 
+        title, 
+        reward, 
+        category: category || 'Engineering', 
+        timeEstimate: time,
+        requesterName: requesterName.trim() || 'Nishit J.'
+      });
       setTitle(''); setReward(''); setCategory('');
       setNotification("📡 Broadcast Sent!");
       setTimeout(() => setNotification(null), 3000);
@@ -278,6 +286,14 @@ function App() {
                       placeholder="Reward (e.g. ₹500, coffee ☕)"
                       value={reward}
                       onChange={e => setReward(e.target.value)}
+                      required
+                    />
+                    <input
+                      className="kb-input transition-theme"
+                      style={inputStyle}
+                      placeholder="Your Name (e.g. Nishit J.)"
+                      value={requesterName}
+                      onChange={e => setRequesterName(e.target.value)}
                       required
                     />
                     <CustomDropdown
