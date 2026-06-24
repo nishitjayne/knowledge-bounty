@@ -1,211 +1,476 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { 
-    Trophy, Gift, Plus, BarChart3, ShieldCheck, Zap, X, Send, 
-    MessageSquare, Bell, Clock, Tag, ExternalLink, User, Target, Palette 
+import {
+  Trophy, Plus, Zap, X, Send,
+  Target, Palette, CheckCircle2, Flame, Clock, Tag
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import './index.css';
 
-// Ensure the API routes hit our Vercel serverless functions
-const API = "/api"; 
+const API = "/api";
 
 const THEMES = {
-    professional: { name: 'Professional', bg: '#f4f5f7', card: '#ffffff', text: '#172b4d', subText: '#5e6c84', accent: '#dfe1e6', button: '#0052cc', highlight: '#0052cc', zap: '#ff991f' },
-    punk: { name: 'Punk', bg: '#000000', card: '#111111', text: '#e0e0e0', subText: '#f50057', accent: '#ffea00', button: '#f50057', highlight: '#ffea00', zap: '#00e5ff' },
-    glossy: { name: 'Glossy', bg: '#f0f2f5', card: 'rgba(255,255,255,0.85)', text: '#333333', subText: '#666666', accent: '#cccccc', button: '#ea4c89', highlight: '#4facfe', zap: '#ff0844' },
-    light: { name: 'Light', bg: '#ffffff', card: '#f9fafb', text: '#111827', subText: '#6b7280', accent: '#e5e7eb', button: '#2563eb', highlight: '#10b981', zap: '#f59e0b' },
-    dark: { name: 'Dark', bg: '#121212', card: '#1e1e1e', text: '#ffffff', subText: '#a0a0a0', accent: '#333333', button: '#bb86fc', highlight: '#03dac6', zap: '#cf6679' },
-    spring: { name: 'Spring', bg: '#fdfbfb', card: '#ffffff', text: '#2d3436', subText: '#636e72', accent: '#ffeaa7', button: '#00b894', highlight: '#fdcb6e', zap: '#e17055' },
-    winter: { name: 'Winter', bg: '#e0c3fc', card: '#8ec5fc', text: '#1e293b', subText: '#334155', accent: '#cbd5e1', button: '#0f172a', highlight: '#0284c7', zap: '#f8fafc' },
-    haze: { name: 'Haze', bg: '#2c3e50', card: '#34495e', text: '#ecf0f1', subText: '#bdc3c7', accent: '#7f8c8d', button: '#9b59b6', highlight: '#e74c3c', zap: '#f1c40f' }
+  professional: { name: 'Professional', bg: '#f4f5f7', card: '#ffffff', text: '#172b4d', subText: '#5e6c84', accent: '#dfe1e6', button: '#0052cc', highlight: '#0052cc', zap: '#ff991f', orb1: '#0052cc', orb2: '#ff991f' },
+  punk:         { name: 'Punk',         bg: '#000000', card: '#111111', text: '#e0e0e0', subText: '#f50057', accent: '#333', button: '#f50057', highlight: '#ffea00', zap: '#00e5ff', orb1: '#f50057', orb2: '#00e5ff' },
+  glossy:       { name: 'Glossy',       bg: '#f0f2f5', card: 'rgba(255,255,255,0.85)', text: '#333333', subText: '#666666', accent: '#ccc', button: '#ea4c89', highlight: '#4facfe', zap: '#ff0844', orb1: '#ea4c89', orb2: '#4facfe' },
+  dark:         { name: 'Dark',         bg: '#121212', card: '#1e1e1e', text: '#ffffff', subText: '#a0a0a0', accent: '#333', button: '#bb86fc', highlight: '#03dac6', zap: '#cf6679', orb1: '#bb86fc', orb2: '#03dac6' },
+  spring:       { name: 'Spring',       bg: '#fdfbfb', card: '#ffffff', text: '#2d3436', subText: '#636e72', accent: '#ffeaa7', button: '#00b894', highlight: '#fdcb6e', zap: '#e17055', orb1: '#00b894', orb2: '#fdcb6e' },
+  haze:         { name: 'Haze',         bg: '#2c3e50', card: '#34495e', text: '#ecf0f1', subText: '#bdc3c7', accent: '#7f8c8d', button: '#9b59b6', highlight: '#e74c3c', zap: '#f1c40f', orb1: '#9b59b6', orb2: '#e74c3c' },
 };
 
 function App() {
-  const [bounties, setBounties] = useState([]);
-  const [title, setTitle] = useState('');
-  const [reward, setReward] = useState('');
-  const [category, setCategory] = useState('Engineering');
-  const [time, setTime] = useState('15M');
-  const [view, setView] = useState('market'); 
+  const [bounties, setBounties]           = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [title, setTitle]                 = useState('');
+  const [reward, setReward]               = useState('');
+  const [category, setCategory]           = useState('Engineering');
+  const [time, setTime]                   = useState('15M');
+  const [view, setView]                   = useState('market');
   const [selectedQuest, setSelectedQuest] = useState(null);
-  const [msg, setMsg] = useState(''); 
-  const [notification, setNotification] = useState(null);
-  const [showXP, setShowXP] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState('professional');
+  const [msg, setMsg]                     = useState('');
+  const [notification, setNotification]   = useState(null);
+  const [currentTheme, setCurrentTheme]   = useState('dark');
   const [showThemePicker, setShowThemePicker] = useState(false);
-  const theme = THEMES[currentTheme]; 
-  const prevCount = useRef(0);
+  const [xpAnimKey, setXpAnimKey]         = useState(0);
+  const chatEndRef                        = useRef(null);
+  const prevCount                         = useRef(0);
+  const theme                             = THEMES[currentTheme];
 
   const refresh = async () => {
     try {
       const { data } = await axios.get(`${API}/bounties`);
       if (data.length > prevCount.current && prevCount.current !== 0) {
-        setNotification("New Signal Detected!");
+        setNotification("⚡ New Signal Detected!");
         setTimeout(() => setNotification(null), 4000);
       }
       prevCount.current = data.length;
       setBounties(data);
+      setLoading(false);
       if (selectedQuest) {
-          const updated = data.find(b => b._id === selectedQuest._id);
-          if(updated) setSelectedQuest(updated);
+        const updated = data.find(b => b._id === selectedQuest._id);
+        if (updated) setSelectedQuest(updated);
       }
-    } catch (err) { console.error("HUD Offline - Server might be sleeping"); }
+    } catch { setLoading(false); }
   };
 
-  useEffect(() => { 
-    refresh(); 
-    const int = setInterval(refresh, 3000); 
+  useEffect(() => {
+    refresh();
+    const int = setInterval(refresh, 3000);
     return () => clearInterval(int);
   }, [selectedQuest?._id]);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [selectedQuest?.messages?.length]);
+
   const onSubmit = async (e) => {
-      e.preventDefault();
-      if(!title || !reward) return;
-      try {
-          await axios.post(`${API}/bounties`, { title, reward, category, timeEstimate: time });
-          setTitle(''); setReward(''); refresh();
-      } catch (err) { alert("Server Error"); }
+    e.preventDefault();
+    if (!title || !reward) return;
+    try {
+      await axios.post(`${API}/bounties`, { title, reward, category, timeEstimate: time });
+      setTitle(''); setReward('');
+      setNotification("📡 Broadcast Sent!");
+      setTimeout(() => setNotification(null), 3000);
+      refresh();
+    } catch { alert("Server Error"); }
   };
 
   const handleAction = async (id, action) => {
     try {
-        await axios.patch(`${API}/bounties/${id}/${action}`);
-        if(action === 'resolve') confetti({ particleCount: 150, spread: 70, colors: [theme.highlight, theme.zap] });
-        if(action === 'claim') setNotification("Bounty Secured!");
-        refresh();
+      await axios.patch(`${API}/bounties/${id}/${action}`);
+      if (action === 'resolve') {
+        confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: [theme.highlight, theme.zap, theme.button] });
+        setNotification("🏆 Mission Complete!");
+        setTimeout(() => setNotification(null), 4000);
+        setXpAnimKey(k => k + 1);
+      }
+      if (action === 'claim') {
+        setNotification("🔒 Bounty Secured!");
+        setTimeout(() => setNotification(null), 3000);
+      }
+      refresh();
     } catch (err) {
-        if (err.response && err.response.status === 409) {
-            alert("⚠️ TOO SLOW! Another agent secured this bounty.");
-            refresh();
-        } else {
-            console.error(err);
-        }
+      if (err.response?.status === 409) {
+        alert("⚠️ TOO SLOW! Another agent secured this bounty.");
+        refresh();
+      }
     }
   };
 
-  const handleSchedule = async (id, timeStr, status) => {
-    await axios.patch(`${API}/bounties/${id}/schedule`, { proposedTime: timeStr, meetingStatus: status });
-    refresh();
-  };
-
   const marketplaceBounties = bounties.filter(b => b.status === 'open');
-  const myClaims = bounties.filter(b => b.status === 'claimed' || b.status === 'resolved');
-  const myPosts = bounties.filter(b => b.requesterName === 'Sarah J.');
-  const totalPoints = bounties.filter(b => b.status === 'resolved').length * 50;
+  const myClaims            = bounties.filter(b => b.status === 'claimed' || b.status === 'resolved');
+  const totalPoints         = bounties.filter(b => b.status === 'resolved').length * 50;
+  const xp                  = 1240 + totalPoints;
 
-  const bgStyle = { backgroundColor: theme.bg, color: theme.text };
-  const cardStyle = { backgroundColor: theme.card, borderColor: theme.accent, color: theme.text };
-  const inputStyle = { backgroundColor: theme.bg, borderColor: theme.accent, color: theme.text };
-  const btnStyle = { backgroundColor: theme.button, color: '#ffffff' }; 
+  const bgStyle    = { backgroundColor: theme.bg, color: theme.text };
+  const cardStyle  = { backgroundColor: theme.card, borderColor: theme.accent, color: theme.text };
+  const inputStyle = { backgroundColor: 'transparent', borderColor: theme.accent, color: theme.text };
 
   return (
-    <div className="min-h-screen p-6 md:p-12 font-sans overflow-x-hidden transition-colors duration-500" style={bgStyle}>
+    <div className="min-h-screen transition-theme animate-fade-in" style={bgStyle}>
+      {/* Ambient background */}
+      <div className="bg-grid" />
+      <div className="orb orb-1" style={{ backgroundColor: theme.orb1 }} />
+      <div className="orb orb-2" style={{ backgroundColor: theme.orb2 }} />
+      <div className="orb orb-3" style={{ backgroundColor: theme.highlight }} />
+
+      {/* Notification toast */}
+      {notification && (
+        <div
+          className="fixed top-6 left-1/2 z-[100] px-6 py-3 rounded-2xl font-black text-white shadow-2xl glass animate-notification"
+          style={{ transform: 'translateX(-50%)', backgroundColor: theme.button }}
+        >
+          {notification}
+        </div>
+      )}
+
       {/* Theme Picker */}
-      <div className="absolute top-6 right-6 flex flex-col items-end z-50">
-        <button onClick={() => setShowThemePicker(!showThemePicker)} className="p-3 rounded-full shadow-lg border backdrop-blur-md transition-transform hover:scale-110" style={{ backgroundColor: theme.card, borderColor: theme.accent }}>
-            <Palette size={24} style={{ color: theme.text }} />
+      <div className="fixed top-5 right-5 flex flex-col items-end z-50">
+        <button
+          onClick={() => setShowThemePicker(s => !s)}
+          className="p-3 rounded-full shadow-xl border glass theme-btn"
+          style={{ backgroundColor: theme.card, borderColor: theme.accent }}
+          title="Change theme"
+        >
+          <Palette size={22} style={{ color: theme.text }} />
         </button>
         {showThemePicker && (
-            <div className="mt-4 p-4 rounded-3xl shadow-2xl flex flex-col gap-2 backdrop-blur-xl border w-48" style={{ backgroundColor: theme.card, borderColor: theme.accent }}>
-                {Object.keys(THEMES).map(tKey => (
-                    <button key={tKey} onClick={() => { setCurrentTheme(tKey); setShowThemePicker(false); }} className="px-4 py-2 text-left rounded-xl hover:opacity-80 font-bold capitalize transition-all duration-300" style={{ color: theme.text, backgroundColor: currentTheme === tKey ? theme.accent : 'transparent' }}>
-                        {THEMES[tKey].name}
-                    </button>
-                ))}
-            </div>
+          <div
+            className="mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44"
+            style={{ backgroundColor: theme.card, borderColor: theme.accent }}
+          >
+            {Object.keys(THEMES).map(tKey => (
+              <button
+                key={tKey}
+                onClick={() => { setCurrentTheme(tKey); setShowThemePicker(false); }}
+                className="px-4 py-2 text-left rounded-xl font-bold capitalize text-sm theme-btn"
+                style={{
+                  color: theme.text,
+                  backgroundColor: currentTheme === tKey ? theme.accent : 'transparent'
+                }}
+              >
+                {currentTheme === tKey && '✓ '}{THEMES[tKey].name}
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
-      <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 mb-20 pt-16">
-          <div className="flex items-center gap-6 cursor-pointer" onClick={() => setView('market')}>
-            <div className="p-4 rounded-[1.8rem] shadow-xl" style={{ backgroundColor: theme.button }}>
-              <Trophy size={36} className="text-white" />
+      <div className="relative z-10 px-4 sm:px-6 md:px-12 pb-16 pt-6">
+        {/* Header */}
+        <header className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6 mb-14 pt-10 header-flex">
+          <div
+            className="flex items-center gap-5 cursor-pointer animate-slide-up"
+            onClick={() => setView('market')}
+          >
+            <div className="p-4 rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
+              <Trophy size={34} className="text-white" />
             </div>
-            <h1 className="text-4xl font-black italic tracking-tighter uppercase">
+            <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter uppercase select-none">
               KNOWLEDGE<span style={{ color: theme.highlight }}>BOUNTY</span>
             </h1>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => setView(view === 'admin' ? 'market' : 'admin')} className="px-8 py-4 rounded-[1.8rem] border-2 shadow-xl bg-purple-900 text-white">
-                {view === 'admin' ? 'Market' : 'My Dashboard'}
+
+          <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <button
+              onClick={() => setView(view === 'admin' ? 'market' : 'admin')}
+              className="nav-tab"
+              style={{
+                backgroundColor: view === 'admin' ? theme.button : 'transparent',
+                borderColor: theme.button,
+                color: view === 'admin' ? '#fff' : theme.text
+              }}
+            >
+              {view === 'admin' ? '← Market' : 'Dashboard'}
             </button>
-            <button onClick={() => setShowXP(true)} className="flex items-center gap-3 px-8 py-4 rounded-[1.8rem] border-2 shadow-xl" style={{ backgroundColor: theme.card, borderColor: theme.zap }}>
-                <Zap size={22} style={{ color: theme.zap }} fill="currentColor"/>
-                <span className="text-xl font-black">{1240 + totalPoints}</span>
+
+            {/* XP Counter */}
+            <button
+              key={xpAnimKey}
+              onClick={() => {}}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count"
+              style={{ backgroundColor: theme.card, borderColor: theme.zap }}
+            >
+              <Zap size={20} style={{ color: theme.zap }} fill="currentColor" />
+              <span className="text-lg font-black">{xp} XP</span>
             </button>
           </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto">
-        {view === 'admin' ? (
-           /* Admin View Logic... */
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-             <section>
-               <h2 className="text-2xl font-black mb-8 uppercase italic">Missions I'm Solving</h2>
-               {myClaims.map(b => <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} onSchedule={handleSchedule} theme={theme}/>)}
-             </section>
-           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-              <div className="lg:col-span-4">
-                  <div className="border p-10 rounded-[3.8rem] shadow-2xl sticky top-10" style={cardStyle}>
-                      <h2 className="text-xs font-black uppercase mb-10 flex items-center gap-3"><Plus size={18} /> New Broadcast</h2>
-                      <form className="space-y-6" onSubmit={onSubmit}>
-                          <input className="w-full rounded-[1.8rem] p-6 font-bold border" style={inputStyle} placeholder="Objective..." value={title} onChange={e => setTitle(e.target.value)} />
-                          <input className="w-full rounded-[1.8rem] p-6 font-bold border" style={inputStyle} placeholder="Reward..." value={reward} onChange={e => setReward(e.target.value)} />
-                          <button className="w-full py-6 rounded-[2rem] font-black uppercase" style={btnStyle}>Broadcast</button>
-                      </form>
-                  </div>
-              </div>
-              <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-                  {marketplaceBounties.map(b => <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} onSchedule={handleSchedule} theme={theme}/>)}
-              </div>
-          </div>
-        )}
-      </main>
-
-      {selectedQuest && (
-        /* Chat Sidebar Logic... */
-        <aside className="fixed top-0 right-0 h-full w-[400px] border-l z-50 p-10 flex flex-col" style={bgStyle}>
-            <div className="flex justify-between items-center mb-10">
-                <h2 className="text-xl font-black uppercase">Comms</h2>
-                <button onClick={() => setSelectedQuest(null)}><X size={18}/></button>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto">
+          {view === 'admin' ? (
+            <div className="animate-slide-up">
+              <h2 className="text-2xl font-black mb-8 uppercase italic flex items-center gap-3">
+                <Target size={24} style={{ color: theme.highlight }} />
+                Active Missions
+              </h2>
+              {myClaims.length === 0 ? (
+                <div className="empty-state" style={{ color: theme.subText }}>
+                  <Target size={48} />
+                  <p className="font-bold">No active missions yet. Claim a bounty!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {myClaims.map((b, i) => (
+                    <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} />
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="flex-1 overflow-y-auto space-y-4">
-                {selectedQuest.messages?.map((m, i) => (
-                    <div key={i} className={`p-4 rounded-xl ${m.sender === 'Expert' ? 'bg-blue-600 text-white ml-auto' : 'bg-gray-700 text-white'}`}>
-                        {m.text}
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+              {/* Post Form */}
+              <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
+                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-8 transition-theme" style={cardStyle}>
+                  <h2 className="text-xs font-black uppercase mb-6 flex items-center gap-2" style={{ color: theme.subText }}>
+                    <Plus size={16} /> New Broadcast
+                  </h2>
+                  <form className="space-y-4" onSubmit={onSubmit}>
+                    <input
+                      className="kb-input transition-theme"
+                      style={inputStyle}
+                      placeholder="Mission objective..."
+                      value={title}
+                      onChange={e => setTitle(e.target.value)}
+                      required
+                    />
+                    <input
+                      className="kb-input transition-theme"
+                      style={inputStyle}
+                      placeholder="Reward (e.g. $50, coffee ☕)"
+                      value={reward}
+                      onChange={e => setReward(e.target.value)}
+                      required
+                    />
+                    <select
+                      className="kb-input transition-theme"
+                      style={inputStyle}
+                      value={category}
+                      onChange={e => setCategory(e.target.value)}
+                    >
+                      {['Engineering','Design','Research','Marketing','Finance','Other'].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                    <select
+                      className="kb-input transition-theme"
+                      style={inputStyle}
+                      value={time}
+                      onChange={e => setTime(e.target.value)}
+                    >
+                      {['15M','30M','1H','2H','4H'].map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="submit"
+                      className="btn-action"
+                      style={{ backgroundColor: theme.button, color: '#fff' }}
+                    >
+                      📡 Broadcast
+                    </button>
+                  </form>
+
+                  {/* Live stats */}
+                  <div className="mt-8 pt-6 border-t flex justify-between text-center" style={{ borderColor: theme.accent }}>
+                    <div>
+                      <div className="text-2xl font-black" style={{ color: theme.highlight }}>{marketplaceBounties.length}</div>
+                      <div className="text-xs font-bold uppercase" style={{ color: theme.subText }}>Open</div>
                     </div>
-                ))}
+                    <div>
+                      <div className="text-2xl font-black" style={{ color: theme.zap }}>{myClaims.filter(b => b.status === 'claimed').length}</div>
+                      <div className="text-xs font-bold uppercase" style={{ color: theme.subText }}>Active</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-black" style={{ color: '#22c55e' }}>{bounties.filter(b => b.status === 'resolved').length}</div>
+                      <div className="text-xs font-bold uppercase" style={{ color: theme.subText }}>Done</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bounty Grid */}
+              <div className="lg:col-span-8">
+                {loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {[...Array(4)].map((_, i) => <div key={i} className="skeleton" />)}
+                  </div>
+                ) : marketplaceBounties.length === 0 ? (
+                  <div className="empty-state" style={{ color: theme.subText }}>
+                    <Flame size={48} />
+                    <p className="font-bold text-lg">No open bounties. Be the first to broadcast!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {marketplaceBounties.map((b, i) => (
+                      <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} />
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </div>
-            <form onSubmit={async (e) => {
-                e.preventDefault(); if(!msg) return;
-                await axios.post(`${API}/bounties/${selectedQuest._id}/chat`, { sender: "Expert", text: msg });
-                setMsg(''); refresh();
-            }} className="mt-4 flex gap-2">
-                <input className="flex-1 p-3 rounded-xl border bg-transparent" placeholder="Type..." value={msg} onChange={e => setMsg(e.target.value)} />
-                <button type="submit" className="p-3 bg-blue-500 rounded-xl"><Send size={18}/></button>
-            </form>
+          )}
+        </main>
+      </div>
+
+      {/* Chat Sidebar */}
+      {selectedQuest && (
+        <aside
+          className="fixed top-0 right-0 h-full border-l z-50 flex flex-col glass transition-theme animate-slide-right chat-sidebar"
+          style={{ width: 380, backgroundColor: theme.bg, borderColor: theme.accent }}
+        >
+          <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: theme.accent }}>
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-wider" style={{ color: theme.subText }}>Comms</h2>
+              <p className="font-bold truncate text-sm mt-1">{selectedQuest.title}</p>
+            </div>
+            <button
+              onClick={() => setSelectedQuest(null)}
+              className="p-2 rounded-xl hover:opacity-70 transition-opacity"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-6 space-y-3">
+            {(!selectedQuest.messages || selectedQuest.messages.length === 0) ? (
+              <div className="empty-state" style={{ color: theme.subText }}>
+                <p className="text-sm font-bold">No messages yet. Start the conversation!</p>
+              </div>
+            ) : (
+              selectedQuest.messages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`chat-bubble ${m.sender === 'Expert' ? 'chat-bubble-expert' : 'chat-bubble-other'}`}
+                  style={{ animationDelay: `${i * 0.05}s` }}
+                >
+                  <div className="text-xs font-bold mb-1 opacity-60">{m.sender}</div>
+                  {m.text}
+                </div>
+              ))
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!msg) return;
+              await axios.post(`${API}/bounties/${selectedQuest._id}/chat`, { sender: "Expert", text: msg });
+              setMsg('');
+              refresh();
+            }}
+            className="p-4 border-t flex gap-2"
+            style={{ borderColor: theme.accent }}
+          >
+            <input
+              className="kb-input flex-1 transition-theme"
+              style={inputStyle}
+              placeholder="Type a message..."
+              value={msg}
+              onChange={e => setMsg(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="p-3 rounded-xl transition-all hover:scale-110 active:scale-95"
+              style={{ backgroundColor: theme.button, color: '#fff' }}
+            >
+              <Send size={18} />
+            </button>
+          </form>
         </aside>
       )}
     </div>
   );
 }
 
-// BountyCard component remains largely the same logic-wise
-function BountyCard({ b, onAction, onChat, onSchedule, theme }) {
-    const isClaimed = b.status === 'claimed';
-    const isResolved = b.status === 'resolved';
+function BountyCard({ b, onAction, onChat, theme, index }) {
+  const isOpen     = b.status === 'open';
+  const isClaimed  = b.status === 'claimed';
+  const isResolved = b.status === 'resolved';
+  const delayClass = `card-delay-${Math.min(index + 1, 6)}`;
 
-    return (
-        <div className="p-8 rounded-[3rem] border-2 mb-6" style={{ backgroundColor: theme.card, borderColor: isClaimed ? theme.highlight : theme.accent }}>
-            <h3 className="text-2xl font-black mb-4 italic">{b.title}</h3>
-            <p className="font-bold text-sm mb-6" style={{ color: theme.highlight }}>Reward: {b.reward}</p>
-            {b.status === 'open' && <button onClick={() => onAction(b._id, 'claim')} className="w-full py-4 rounded-2xl font-bold uppercase" style={{ backgroundColor: theme.highlight, color: theme.bg }}>Claim</button>}
-            {isClaimed && <button onClick={() => onAction(b._id, 'resolve')} className="w-full py-4 rounded-2xl font-bold uppercase bg-green-600 text-white">Complete</button>}
-            {isResolved && <div className="text-center font-black uppercase" style={{ color: theme.highlight }}>Mission Secured</div>}
-        </div>
-    );
+  const categoryColors = {
+    Engineering: '#3b82f6', Design: '#ec4899', Research: '#8b5cf6',
+    Marketing: '#f59e0b', Finance: '#10b981', Other: '#6b7280'
+  };
+
+  return (
+    <div
+      className={`bounty-card animate-slide-up ${delayClass} ${isOpen ? 'is-open' : ''} ${isResolved ? 'resolved-glow' : ''} transition-theme`}
+      style={{
+        backgroundColor: theme.card,
+        borderColor: isResolved ? theme.highlight : isClaimed ? theme.zap : theme.accent,
+        '--accent-rgb': '99,102,241',
+        '--highlight-rgb': '251,191,36',
+        '--highlight-color': theme.highlight,
+      }}
+    >
+      {/* Category tag */}
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className="status-badge"
+          style={{ backgroundColor: `${categoryColors[b.category] || '#6b7280'}20`, color: categoryColors[b.category] || '#6b7280' }}
+        >
+          <Tag size={10} />
+          {b.category}
+        </span>
+        <span className="status-badge" style={{
+          backgroundColor: isResolved ? '#22c55e20' : isClaimed ? `${theme.zap}20` : `${theme.highlight}20`,
+          color: isResolved ? '#22c55e' : isClaimed ? theme.zap : theme.highlight
+        }}>
+          {isResolved ? <CheckCircle2 size={10} /> : isClaimed ? <Zap size={10} fill="currentColor" /> : <div className="dot" />}
+          {isResolved ? 'Resolved' : isClaimed ? 'Claimed' : 'Open'}
+        </span>
+      </div>
+
+      <h3 className="text-lg font-black mb-2 leading-tight">{b.title}</h3>
+
+      <div className="flex items-center gap-4 mb-4 text-xs font-bold" style={{ color: theme.subText }}>
+        <span style={{ color: theme.highlight }}>🎁 {b.reward}</span>
+        {b.timeEstimate && <span className="flex items-center gap-1"><Clock size={11} />{b.timeEstimate}</span>}
+        <span>by {b.requesterName}</span>
+      </div>
+
+      <div className="space-y-2">
+        {isOpen && (
+          <button
+            onClick={() => onAction(b._id, 'claim')}
+            className="btn-action"
+            style={{ backgroundColor: theme.highlight, color: theme.bg }}
+          >
+            ⚡ Claim Bounty
+          </button>
+        )}
+        {isClaimed && (
+          <button
+            onClick={() => onAction(b._id, 'resolve')}
+            className="btn-action"
+            style={{ backgroundColor: '#22c55e', color: '#fff' }}
+          >
+            ✅ Mark Complete
+          </button>
+        )}
+        {isResolved && (
+          <div className="text-center font-black text-sm py-3 animate-float" style={{ color: theme.highlight }}>
+            🏆 Mission Secured
+          </div>
+        )}
+        {(isClaimed || isResolved) && (
+          <button
+            onClick={() => onChat(b)}
+            className="btn-action"
+            style={{ backgroundColor: 'transparent', border: `2px solid ${theme.accent}`, color: theme.text }}
+          >
+            💬 Open Comms
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default App;

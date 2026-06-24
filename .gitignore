@@ -2,6 +2,12 @@ node_modules/
 build/
 dist/
 .env
-.env.local
+.env.*
+!.env.example
 .DS_Store
+Thumbs.db
 *.log
+.vercel/
+.claude/
+.cursor/
+.gemini/

@@ -1,70 +1,155 @@
-# Getting Started with Create React App
+# 🏆 Knowledge Bounty
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> **Real-time gamified task marketplace** — broadcast problems, compete to solve them, earn XP.
 
-## Available Scripts
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://knowledge-bounty.vercel.app)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-000?style=for-the-badge&logo=vercel)](https://vercel.com)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ What is this?
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Knowledge Bounty is a **live, gamified task marketplace** where teams can:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- 📡 **Broadcast** a problem as a "bounty" with a reward
+- ⚡ **Race** to claim it before someone else does (race-condition-proof with MongoDB atomic locking)
+- ✅ **Resolve** it and trigger a confetti explosion
+- 💬 **Chat** in real-time per bounty via a built-in comms sidebar
+- 🎨 **Switch themes** (6 themes: Dark, Punk, Glossy, Haze, Spring, Professional)
+- 🏅 **Earn XP** that animates on every resolved mission
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Tech Stack
 
-### `npm run build`
+| Layer | Tech |
+|---|---|
+| **Frontend** | React 19, Lucide Icons, Canvas Confetti, CSS Animations |
+| **Backend** | Node.js + Express (Vercel Serverless Functions) |
+| **Database** | MongoDB Atlas (mongoose, atomic findByIdAndUpdate) |
+| **Deployment** | Vercel (frontend + API in one project) |
+| **Styling** | Vanilla CSS with keyframe animations, glassmorphism |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🚀 Features
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **⚡ Race-condition-proof claiming** — uses MongoDB's atomic `findByIdAndUpdate` so only one user can claim a bounty even under simultaneous requests
+- **🔄 Real-time polling** — auto-refreshes every 3 seconds, notifies on new bounties
+- **🎨 6 live themes** — Professional, Dark, Punk, Glossy, Spring, Haze — all with ambient orb backgrounds
+- **💬 Per-bounty chat** — full comms sidebar with auto-scroll and message history
+- **🎊 Confetti on resolve** — multi-color burst using canvas-confetti
+- **📊 Live stats** — open/active/resolved counters update in real-time
+- **📱 Fully responsive** — mobile-first layout, chat slides up from bottom on mobile
+- **✨ Animations** — staggered card entrance, hover lift, pulse ring on open bounties, shimmer skeletons
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📁 Project Structure
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+knowledge-bounty/
+├── api/
+│   └── index.js          # Vercel serverless Express API + MongoDB
+├── public/
+│   └── index.html
+├── src/
+│   ├── App.js            # Main React app + BountyCard component
+│   ├── index.css         # All animations, keyframes, responsive styles
+│   └── index.js          # Entry point
+├── vercel.json           # Rewrites /api/* → serverless function
+├── package.json
+└── .env.example          # Required env vars
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## ⚙️ Local Setup
 
-## Learn More
+### 1. Clone
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/nishitjayne/knowledge-bounty.git
+cd knowledge-bounty
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Install dependencies
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Set environment variables
 
-### Analyzing the Bundle Size
+Create a `.env` file in the root:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```env
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/knowledgeBountyDB?retryWrites=true&w=majority
+```
 
-### Making a Progressive Web App
+### 4. Run locally
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+npm start
+```
 
-### Advanced Configuration
+Open [http://localhost:3000](http://localhost:3000)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+> **Note:** The `/api` routes require Vercel CLI for local serverless testing. Run `npx vercel dev` instead of `npm start` if you need API + frontend together locally.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🌐 Deploy to Vercel
 
-### `npm run build` fails to minify
+### One-click
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/nishitjayne/knowledge-bounty)
+
+### Manual
+
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+**Required Vercel environment variable:**
+
+| Variable | Value |
+|---|---|
+| `MONGODB_URI` | Your MongoDB Atlas connection string |
+
+Set it in: **Vercel Dashboard → Project → Settings → Environment Variables**
+
+---
+
+## 🎮 How to Use
+
+| Action | How |
+|---|---|
+| **Post a bounty** | Fill in the form on the left → click Broadcast |
+| **Claim a bounty** | Click ⚡ Claim Bounty on any open card |
+| **Resolve** | Go to Dashboard → click ✅ Mark Complete |
+| **Chat** | Click 💬 Open Comms on a claimed/resolved bounty |
+| **Change theme** | Click the 🎨 palette icon (top right) |
+
+---
+
+## 🔒 Security Notes
+
+- MongoDB credentials are stored as **environment variables** — never hardcoded
+- `.vercel/` and `.env` are gitignored
+- MongoDB Atlas network access should be restricted to Vercel's IP ranges in production
+
+---
+
+## 👤 Author
+
+**Nishit Jain** — [@nishitjayne](https://github.com/nishitjayne)
+
+---
+
+## 📄 License
+
+MIT — feel free to fork and build on it.
