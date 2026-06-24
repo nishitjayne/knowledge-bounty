@@ -6,7 +6,7 @@
 
 const https = require('https');
 
-const API_BASE = 'https://knowledge-bounty.vercel.app/api';
+const API_BASE = process.env.API_BASE || 'http://localhost:3000/api';
 
 // Helper to make HTTP requests
 const request = (method, path, body) => new Promise((resolve, reject) => {

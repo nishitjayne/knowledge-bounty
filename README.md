@@ -2,7 +2,7 @@
 
 > **Real-time, gamified task marketplace** — broadcast engineering & business problems, claim missions, collaborate via live chat, and earn XP.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://knowledge-bounty.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](#)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 [![Vercel](https://img.shields.io/badge/Deployed-Vercel-000?style=for-the-badge&logo=vercel)](https://vercel.com)
@@ -84,7 +84,7 @@ npm install
 ### 2. Environment Setup
 Create a `.env` file in the root directory:
 ```env
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.stxjaf6.mongodb.net/knowledgeBountyDB?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<username>:<password>@your-cluster.xxxxx.mongodb.net/knowledgeBountyDB?retryWrites=true&w=majority
 ```
 
 ### 3. Run Dev Server
