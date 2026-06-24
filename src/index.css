@@ -396,35 +396,51 @@ body {
   animation: float 5s ease-in-out infinite;
 }
 
-/* ─── CUSTOM SELECT DROPDOWN AND BACKGROUND TINTS ──── */
-.select-wrapper {
+/* ─── CUSTOM REACT DROPDOWN AND TINTS ─────────────── */
+.custom-dropdown-container {
   position: relative;
   width: 100%;
+  z-index: 50;
 }
 
-.select-wrapper select.kb-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding-right: 3rem;
-  cursor: pointer;
-}
-
-.select-wrapper .select-arrow {
+/* Base custom options box */
+.custom-dropdown-options {
   position: absolute;
-  right: 1.25rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 100%;
+  left: 0;
+  width: 100%;
+  border-style: solid;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-8px);
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  opacity: 0.7;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s ease,
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 60;
 }
 
-.select-wrapper select.kb-input:focus + .select-arrow {
-  transform: translateY(-50%) rotate(180deg);
+/* Expansion state */
+.custom-dropdown-options.open {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Dropdown list item */
+.custom-dropdown-item {
+  padding: 0.8rem 1.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+
+.custom-dropdown-item:hover {
+  background-color: rgba(var(--accent-rgb), 0.15) !important;
+  border-left-color: var(--highlight-color, #fbbf24);
+  padding-left: 1.8rem;
 }
 
 /* Subtle background overlay gradient for claimed active mission */
@@ -435,10 +451,4 @@ body {
 /* Subtle background overlay gradient for broadcast bounty card */
 .kb-form-card {
   background-image: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04) 0%, rgba(var(--accent-rgb), 0.01) 100%) !important;
-}
-
-/* Enforce solid contrast styling on option elements */
-.select-wrapper select.kb-input option {
-  background-color: var(--option-bg, #ffffff) !important;
-  color: var(--option-text, #172b4d) !important;
 }

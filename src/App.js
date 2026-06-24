@@ -267,36 +267,20 @@ function App() {
                       onChange={e => setReward(e.target.value)}
                       required
                     />
-                    <div className="select-wrapper">
-                      <select
-                        className="kb-input transition-theme"
-                        style={{ ...inputStyle, '--option-bg': optionStyle.backgroundColor, '--option-text': optionStyle.color }}
-                        value={category}
-                        onChange={e => setCategory(e.target.value)}
-                      >
-                        {['Engineering','Design','Research','Marketing','Finance','Other'].map(c => (
-                          <option key={c} value={c} style={optionStyle}>{c}</option>
-                        ))}
-                      </select>
-                      <span className="select-arrow" style={{ color: theme.text }}>
-                        <ChevronDown size={18} />
-                      </span>
-                    </div>
-                    <div className="select-wrapper">
-                      <select
-                        className="kb-input transition-theme"
-                        style={{ ...inputStyle, '--option-bg': optionStyle.backgroundColor, '--option-text': optionStyle.color }}
-                        value={time}
-                        onChange={e => setTime(e.target.value)}
-                      >
-                        {['5M','10M','15M','30M','1H','2H','4H'].map(t => (
-                          <option key={t} value={t} style={optionStyle}>{t}</option>
-                        ))}
-                      </select>
-                      <span className="select-arrow" style={{ color: theme.text }}>
-                        <ChevronDown size={18} />
-                      </span>
-                    </div>
+                    <CustomDropdown
+                      value={category}
+                      onChange={setCategory}
+                      options={['Engineering','Design','Research','Marketing','Finance','Other']}
+                      theme={theme}
+                      placeholder="Select Category"
+                    />
+                    <CustomDropdown
+                      value={time}
+                      onChange={setTime}
+                      options={['5M','10M','15M','30M','1H','2H','4H']}
+                      theme={theme}
+                      placeholder="Time Estimate"
+                    />
                     <button
                       type="submit"
                       className="btn-action"
@@ -501,6 +485,82 @@ function BountyCard({ b, onAction, onChat, theme, index }) {
             💬 Open Comms
           </button>
         )}
+      </div>
+    </div>
+  );
+}
+
+function CustomDropdown({ value, onChange, options, theme, placeholder }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const clickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', clickOutside);
+    return () => document.removeEventListener('mousedown', clickOutside);
+  }, []);
+
+  const handleSelect = (val) => {
+    onChange(val);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="custom-dropdown-container" ref={dropdownRef}>
+      {/* Trigger Button */}
+      <div
+        className={`kb-input flex items-center justify-between cursor-pointer transition-theme select-none ${isOpen ? 'active' : ''}`}
+        style={{
+          backgroundColor: 'transparent',
+          borderColor: theme.accent,
+          color: theme.text,
+          borderRadius: isOpen ? '1.5rem 1.5rem 0 0' : '1.5rem',
+          borderBottomWidth: isOpen ? '0' : '2px',
+        }}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{value || placeholder}</span>
+        <ChevronDown
+          size={18}
+          className="transition-transform duration-300"
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            color: theme.text,
+          }}
+        />
+      </div>
+
+      {/* Options List */}
+      <div
+        className={`custom-dropdown-options transition-all duration-300 ${isOpen ? 'open' : 'closed'}`}
+        style={{
+          backgroundColor: theme.card,
+          borderColor: theme.accent,
+          color: theme.text,
+          borderWidth: isOpen ? '2px' : '0px',
+          borderTopWidth: '0',
+          borderRadius: '0 0 1.5rem 1.5rem',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        }}
+      >
+        {options.map((opt) => (
+          <div
+            key={opt}
+            className="custom-dropdown-item font-bold transition-all duration-200"
+            style={{
+              color: theme.text,
+              '--accent-rgb': hexToRgb(theme.button),
+              '--highlight-color': theme.highlight,
+            }}
+            onClick={() => handleSelect(opt)}
+          >
+            {opt}
+          </div>
+        ))}
       </div>
     </div>
   );
