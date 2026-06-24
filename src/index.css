@@ -436,3 +436,9 @@ body {
 .kb-form-card {
   background-image: linear-gradient(135deg, rgba(var(--accent-rgb), 0.04) 0%, rgba(var(--accent-rgb), 0.01) 100%) !important;
 }
+
+/* Enforce solid contrast styling on option elements */
+.select-wrapper select.kb-input option {
+  background-color: var(--option-bg, #ffffff) !important;
+  color: var(--option-text, #172b4d) !important;
+}

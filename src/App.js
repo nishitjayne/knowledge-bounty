@@ -123,6 +123,11 @@ function App() {
   const bgStyle    = { backgroundColor: theme.bg, color: theme.text };
   const cardStyle  = { backgroundColor: theme.card, borderColor: theme.accent, color: theme.text };
   const inputStyle = { backgroundColor: 'transparent', borderColor: theme.accent, color: theme.text };
+  const isThemeDark = ['punk', 'dark', 'haze'].includes(currentTheme);
+  const optionStyle = {
+    backgroundColor: isThemeDark ? '#1e1e1e' : '#ffffff',
+    color: isThemeDark ? '#ffffff' : '#172b4d',
+  };
 
   return (
     <div className="min-h-screen transition-theme animate-fade-in" style={bgStyle}>
@@ -265,12 +270,12 @@ function App() {
                     <div className="select-wrapper">
                       <select
                         className="kb-input transition-theme"
-                        style={inputStyle}
+                        style={{ ...inputStyle, '--option-bg': optionStyle.backgroundColor, '--option-text': optionStyle.color }}
                         value={category}
                         onChange={e => setCategory(e.target.value)}
                       >
                         {['Engineering','Design','Research','Marketing','Finance','Other'].map(c => (
-                          <option key={c} value={c}>{c}</option>
+                          <option key={c} value={c} style={optionStyle}>{c}</option>
                         ))}
                       </select>
                       <span className="select-arrow" style={{ color: theme.text }}>
@@ -280,12 +285,12 @@ function App() {
                     <div className="select-wrapper">
                       <select
                         className="kb-input transition-theme"
-                        style={inputStyle}
+                        style={{ ...inputStyle, '--option-bg': optionStyle.backgroundColor, '--option-text': optionStyle.color }}
                         value={time}
                         onChange={e => setTime(e.target.value)}
                       >
                         {['5M','10M','15M','30M','1H','2H','4H'].map(t => (
-                          <option key={t} value={t}>{t}</option>
+                          <option key={t} value={t} style={optionStyle}>{t}</option>
                         ))}
                       </select>
                       <span className="select-arrow" style={{ color: theme.text }}>
