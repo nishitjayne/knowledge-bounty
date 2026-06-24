@@ -41,7 +41,7 @@ function App() {
   const [loading, setLoading]             = useState(true);
   const [title, setTitle]                 = useState('');
   const [reward, setReward]               = useState('');
-  const [category, setCategory]           = useState('Engineering');
+  const [category, setCategory]           = useState('');
   const [time, setTime]                   = useState('15M');
   const [view, setView]                   = useState('market');
   const [selectedQuest, setSelectedQuest] = useState(null);
@@ -85,8 +85,8 @@ function App() {
     e.preventDefault();
     if (!title || !reward) return;
     try {
-      await axios.post(`${API}/bounties`, { title, reward, category, timeEstimate: time });
-      setTitle(''); setReward('');
+      await axios.post(`${API}/bounties`, { title, reward, category: category || 'Engineering', timeEstimate: time });
+      setTitle(''); setReward(''); setCategory('');
       setNotification("📡 Broadcast Sent!");
       setTimeout(() => setNotification(null), 3000);
       refresh();
@@ -147,78 +147,91 @@ function App() {
         </div>
       )}
 
-      {/* Theme Picker */}
-      <div className="fixed top-5 right-5 flex flex-col items-end z-50">
-        <button
-          onClick={() => setShowThemePicker(s => !s)}
-          className="p-3 rounded-full shadow-xl border glass theme-btn"
-          style={{ backgroundColor: theme.card, borderColor: theme.accent }}
-          title="Change theme"
-        >
-          <Palette size={22} style={{ color: theme.text }} />
-        </button>
-        {showThemePicker && (
-          <div
-            className="mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44"
-            style={{ backgroundColor: theme.card, borderColor: theme.accent }}
-          >
-            {Object.keys(THEMES).map(tKey => (
+      {/* Sticky Header Wrapper */}
+      <div
+        className="sticky top-0 z-40 transition-theme border-b"
+        style={{
+          backgroundColor: `${theme.bg}bb`,
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderColor: `${theme.accent}40`
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-4">
+          <header className="flex flex-col sm:flex-row justify-between items-center gap-6 header-flex">
+            <div
+              className="flex items-center gap-5 cursor-pointer animate-slide-up"
+              onClick={() => setView('market')}
+            >
+              <div className="p-4 rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
+                <Trophy size={34} className="text-white" />
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter uppercase select-none">
+                KNOWLEDGE<span style={{ color: theme.highlight }}>BOUNTY</span>
+              </h1>
+            </div>
+
+            <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <button
-                key={tKey}
-                onClick={() => { setCurrentTheme(tKey); setShowThemePicker(false); }}
-                className="px-4 py-2 text-left rounded-xl font-bold capitalize text-sm theme-btn"
+                onClick={() => setView(view === 'admin' ? 'market' : 'admin')}
+                className="nav-tab"
                 style={{
-                  color: theme.text,
-                  backgroundColor: currentTheme === tKey ? theme.accent : 'transparent'
+                  backgroundColor: view === 'admin' ? theme.button : 'transparent',
+                  borderColor: theme.button,
+                  color: view === 'admin' ? '#fff' : theme.text
                 }}
               >
-                {currentTheme === tKey && '✓ '}{THEMES[tKey].name}
+                {view === 'admin' ? '← Market' : 'Dashboard'}
               </button>
-            ))}
-          </div>
-        )}
+
+              {/* XP Counter */}
+              <button
+                key={xpAnimKey}
+                onClick={() => {}}
+                className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count"
+                style={{ backgroundColor: theme.card, borderColor: theme.zap }}
+              >
+                <Zap size={20} style={{ color: theme.zap }} fill="currentColor" />
+                <span className="text-lg font-black">{xp} XP</span>
+              </button>
+
+              {/* Theme Picker */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowThemePicker(s => !s)}
+                  className="p-3 rounded-2xl shadow-xl border-2 glass theme-btn flex items-center justify-center"
+                  style={{ backgroundColor: theme.card, borderColor: theme.accent }}
+                  title="Change theme"
+                >
+                  <Palette size={20} style={{ color: theme.text }} />
+                </button>
+                {showThemePicker && (
+                  <div
+                    className="absolute right-0 mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44 z-50"
+                    style={{ backgroundColor: theme.card, borderColor: theme.accent }}
+                  >
+                    {Object.keys(THEMES).map(tKey => (
+                      <button
+                        key={tKey}
+                        onClick={() => { setCurrentTheme(tKey); setShowThemePicker(false); }}
+                        className="px-4 py-2 text-left rounded-xl font-bold capitalize text-sm theme-btn"
+                        style={{
+                          color: theme.text,
+                          backgroundColor: currentTheme === tKey ? theme.accent : 'transparent'
+                        }}
+                      >
+                        {currentTheme === tKey && '✓ '}{THEMES[tKey].name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </header>
+        </div>
       </div>
 
-      <div className="relative z-10 px-4 sm:px-6 md:px-12 pb-16 pt-6">
-        {/* Header */}
-        <header className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6 mb-14 pt-10 header-flex">
-          <div
-            className="flex items-center gap-5 cursor-pointer animate-slide-up"
-            onClick={() => setView('market')}
-          >
-            <div className="p-4 rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
-              <Trophy size={34} className="text-white" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter uppercase select-none">
-              KNOWLEDGE<span style={{ color: theme.highlight }}>BOUNTY</span>
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            <button
-              onClick={() => setView(view === 'admin' ? 'market' : 'admin')}
-              className="nav-tab"
-              style={{
-                backgroundColor: view === 'admin' ? theme.button : 'transparent',
-                borderColor: theme.button,
-                color: view === 'admin' ? '#fff' : theme.text
-              }}
-            >
-              {view === 'admin' ? '← Market' : 'Dashboard'}
-            </button>
-
-            {/* XP Counter */}
-            <button
-              key={xpAnimKey}
-              onClick={() => {}}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count"
-              style={{ backgroundColor: theme.card, borderColor: theme.zap }}
-            >
-              <Zap size={20} style={{ color: theme.zap }} fill="currentColor" />
-              <span className="text-lg font-black">{xp} XP</span>
-            </button>
-          </div>
-        </header>
+      <div className="relative z-10 px-4 sm:px-6 md:px-12 pb-16 pt-10">
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto">
@@ -246,7 +259,7 @@ function App() {
 
               {/* Post Form */}
               <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-8 transition-theme" style={{ ...cardStyle, '--accent-rgb': hexToRgb(theme.button) }}>
+                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-28 transition-theme" style={{ ...cardStyle, '--accent-rgb': hexToRgb(theme.button) }}>
                   <h2 className="text-xs font-black uppercase mb-6 flex items-center gap-2" style={{ color: theme.subText }}>
                     <Plus size={16} /> New Broadcast
                   </h2>
@@ -272,7 +285,7 @@ function App() {
                       onChange={setCategory}
                       options={['Engineering','Design','Research','Marketing','Finance','Other']}
                       theme={theme}
-                      placeholder="Select Category"
+                      placeholder="Department?"
                     />
                     <CustomDropdown
                       value={time}
