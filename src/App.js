@@ -283,7 +283,7 @@ function App() {
                     <input
                       className="kb-input transition-theme"
                       style={inputStyle}
-                      placeholder="Reward (e.g. ₹500, coffee ☕)"
+                      placeholder="Reward (e.g. ₹4000, coffee ☕)"
                       value={reward}
                       onChange={e => setReward(e.target.value)}
                       required
