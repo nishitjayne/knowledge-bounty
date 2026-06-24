@@ -7,6 +7,8 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 [![Vercel](https://img.shields.io/badge/Deployed-Vercel-000?style=for-the-badge&logo=vercel)](https://vercel.com)
 
+🔗 **Live Website:** [https://knowledge-bounty.vercel.app](https://knowledge-bounty.vercel.app)
+
 ---
 
 ## ✨ Features
