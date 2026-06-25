@@ -285,31 +285,15 @@ function App() {
               <button
                 key={xpAnimKey}
                 onClick={handleXpClick}
-                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-bull-charge' : ''}`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-inferno' : ''}`}
                 style={{
                   backgroundColor: theme.card,
                   borderColor: theme.zap,
                   '--zap-rgb': hexToRgb(theme.zap),
                 }}
               >
-                {/* Label sits above the bull via z-index */}
-                <span className="xp-label">
-                  <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
-                  <span className="text-lg font-black">{xp} XP</span>
-                </span>
-                {/* Bull charges across on click */}
-                {xpClicked && (
-                  <>
-                    <BullRunner style={{ color: theme.zap }} />
-                    <div className="xp-dust" style={{ backgroundColor: theme.zap }} />
-                    <svg className="xp-star" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-                      <path
-                        d="M9 0 L10.8 6.3 L18 9 L10.8 11.7 L9 18 L7.2 11.7 L0 9 L7.2 6.3 Z"
-                        fill={theme.zap}
-                      />
-                    </svg>
-                  </>
-                )}
+                <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
+                <span className="text-lg font-black">{xp} XP</span>
               </button>
 
               {/* Theme Picker */}
@@ -762,57 +746,6 @@ function CustomDropdown({ value, onChange, options, theme, placeholder }) {
         ))}
       </div>
     </div>
-  );
-}
-
-// ─── BullRunner ─────────────────────────────────────────────────────────────
-// Cartoon charging bull SVG that runs across the XP button.
-// Uses currentColor so it inherits theme.zap from the parent style prop.
-function BullRunner({ style }) {
-  return (
-    <svg
-      className="xp-bull-runner"
-      style={style}
-      viewBox="-2 -2 62 42"
-      width="50"
-      height="32"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      {/* Body — elongated for charging pose */}
-      <ellipse cx="22" cy="24" rx="17" ry="9" />
-
-      {/* Neck flowing into head */}
-      <path d="M35 17 C40 12 46 14 47 21 L46 28 C42 30 37 27 34 23 Z" />
-
-      {/* Horns pointing forward (charging) */}
-      <path d="M43 15 L52 5"  stroke="currentColor" strokeWidth="3"   strokeLinecap="round" fill="none" />
-      <path d="M40 15 L48 4"  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-
-      {/* Eye — angry cartoon dot */}
-      <circle cx="44" cy="19" r="2.2" fill="white" />
-      <circle cx="44.8" cy="19.5" r="1.1" fill="#111" />
-
-      {/* Angry brow */}
-      <path d="M41 16 Q45 14 49 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-      {/* Nose */}
-      <ellipse cx="49" cy="25" rx="2.8" ry="2" opacity="0.55" />
-
-      {/* Running legs — splayed for speed */}
-      <path d="M30 31 L26 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
-      <path d="M36 31 L41 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
-      <path d="M14 31 L10 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
-      <path d="M20 31 L22 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
-
-      {/* Tail — up and curved (excited/charging) */}
-      <path d="M6 20 Q0 11 4 6"   stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" fill="none" />
-      <circle cx="4" cy="6" r="3" />
-
-      {/* Speed steam lines from nostrils */}
-      <path d="M52 23 L58 21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.7" />
-      <path d="M52 26 L58 27" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.45" />
-    </svg>
   );
 }
 

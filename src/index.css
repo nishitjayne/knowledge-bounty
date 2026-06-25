@@ -79,45 +79,21 @@ body {
   100% { transform: translate(0, 0) scale(1); }
 }
 
-/* ─── XP BULL CHARGE ANIMATION ──────────────────── */
-/* Stage 1: Anticipation — pulls back like a bull pawing ground */
-/* Stage 2: CHARGE — slingshot stretch forward                  */
-/* Stage 3: Impact + settle with cartoon squash                 */
-@keyframes xp-bull-charge {
-  0%   { transform: translateX(0)    scaleX(1)    scaleY(1)    rotate(0deg);  }
-  10%  { transform: translateX(-8px) scaleX(0.90) scaleY(1.10) rotate(-3deg); }
-  20%  { transform: translateX(-13px) scaleX(0.83) scaleY(1.16) rotate(-5deg); }
-  /* SLAM */
-  40%  { transform: translateX(18px) scaleX(1.36) scaleY(0.74) rotate(2.5deg); }
-  /* Impact bounce */
-  52%  { transform: translateX(6px)  scaleX(0.92) scaleY(1.09) rotate(-2deg); }
-  63%  { transform: translateX(10px) scaleX(1.06) scaleY(0.95) rotate(1deg);  }
-  /* Settle */
-  76%  { transform: translateX(3px)  scaleX(0.99) scaleY(1.01); }
-  88%  { transform: translateX(-1px) scaleX(1.01) scaleY(0.99); }
-  100% { transform: translateX(0)    scaleX(1)    scaleY(1)    rotate(0deg);  }
-}
-
-/* Bull SVG: charges left → right across button */
-@keyframes xp-bull-runner {
-  0%   { transform: translateX(-58px); opacity: 0; }
-  8%   { transform: translateX(-42px); opacity: 1; }
-  78%  { transform: translateX(190px); opacity: 1; }
-  100% { transform: translateX(205px); opacity: 0; }
-}
-
-/* Dust puff on left as bull launches */
-@keyframes xp-dust-puff {
-  0%   { transform: scale(0.1) translateX(0)   translateY(0);   opacity: 0;   }
-  25%  { transform: scale(1)   translateX(-6px) translateY(-4px); opacity: 0.75; }
-  100% { transform: scale(2.2) translateX(-18px) translateY(-12px); opacity: 0; }
-}
-
-/* Impact star/burst on right on landing */
-@keyframes xp-impact-star {
-  0%   { transform: scale(0)   rotate(0deg);   opacity: 1;   }
-  55%  { transform: scale(1.3) rotate(200deg); opacity: 0.9; }
-  100% { transform: scale(0.6) rotate(360deg); opacity: 0;   }
+/* ─── XP INFERNO ANIMATION ──────────────────────── */
+/* Button goes full red+fiery on click, reverts after 2s */
+@keyframes xp-inferno-glow {
+  0%   { transform: scale(1);    box-shadow: none;                                                                   filter: brightness(1); }
+  8%   { transform: scale(0.95); box-shadow: none;                                                                   filter: brightness(0.9); }
+  18%  { transform: scale(1.07); box-shadow: 0 0 18px 6px rgba(255,50,0,0.75), 0 0 50px 18px rgba(255,100,0,0.35); filter: brightness(1.4); }
+  /* Fire flicker */
+  28%  { transform: scale(1.05); box-shadow: 0 0 30px 12px rgba(255,30,0,0.85), 0 0 80px 28px rgba(255,80,0,0.40); filter: brightness(1.6); }
+  36%  { transform: scale(1.08); box-shadow: 0 0 22px 8px rgba(255,60,0,0.70), 0 0 60px 20px rgba(255,120,0,0.30); filter: brightness(1.35); }
+  45%  { transform: scale(1.06); box-shadow: 0 0 38px 14px rgba(255,25,0,0.90), 0 0 90px 32px rgba(255,70,0,0.42); filter: brightness(1.65); }
+  55%  { transform: scale(1.07); box-shadow: 0 0 28px 10px rgba(255,50,0,0.80), 0 0 70px 24px rgba(255,100,0,0.36); filter: brightness(1.50); }
+  65%  { transform: scale(1.05); box-shadow: 0 0 20px 7px rgba(255,50,0,0.60), 0 0 55px 16px rgba(255,100,0,0.25); filter: brightness(1.25); }
+  78%  { transform: scale(1.03); box-shadow: 0 0 12px 4px rgba(255,50,0,0.35), 0 0 35px 10px rgba(255,100,0,0.15); filter: brightness(1.10); }
+  90%  { transform: scale(1.01); box-shadow: 0 0  6px 2px rgba(255,50,0,0.15);                                     filter: brightness(1.04); }
+  100% { transform: scale(1);    box-shadow: none;                                                                   filter: brightness(1); }
 }
 
 @keyframes xp-zap-icon {
@@ -377,60 +353,13 @@ body {
   animation: shimmer 2.5s infinite;
 }
 
-/* XP bull charge: fires on click, reverts after 2s */
-.xp-counter.xp-bull-charge {
-  animation: xp-bull-charge 2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  position: relative;
+/* XP inferno: button ignites red+fiery on click, reverts after 2s */
+.xp-counter.xp-inferno {
+  animation: xp-inferno-glow 2s ease forwards;
 }
 
-.xp-counter.xp-bull-charge .xp-zap-icon {
+.xp-counter.xp-inferno .xp-zap-icon {
   animation: xp-zap-icon 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  position: relative;
-  z-index: 1;
-}
-
-/* Bull SVG that runs across the button */
-.xp-bull-runner {
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  pointer-events: none;
-  z-index: 0;
-  animation: xp-bull-runner 1.45s ease-in 0.17s forwards;
-}
-
-/* Dust puff (left side, triggered after anticipation) */
-.xp-dust {
-  position: absolute;
-  left: 14px;
-  bottom: 7px;
-  width: 14px;
-  height: 10px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  animation: xp-dust-puff 0.65s ease-out 0.48s forwards;
-}
-
-/* Impact star (right side, on landing) */
-.xp-star {
-  position: absolute;
-  right: 14px;
-  top: 8px;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  animation: xp-impact-star 0.55s ease-out 0.58s forwards;
-}
-
-/* Keep text content above the bull */
-.xp-label {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 /* ─── PER-BUTTON QUIRKY ANIMATIONS ──────────────── */
