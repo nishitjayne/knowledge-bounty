@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import {
   Trophy, Plus, Zap, X, Send,
   Target, Palette, CheckCircle2, Flame, Clock, Tag, ChevronDown
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import ThreeBackground from './ThreeBackground';
 import './index.css';
 
 const API = "/api";
@@ -51,14 +52,40 @@ function App() {
   const [currentTheme, setCurrentTheme]   = useState('dark');
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [xpAnimKey, setXpAnimKey]         = useState(0);
+  const [xpClicked, setXpClicked]         = useState(false);
+  const [navAnim, setNavAnim]             = useState(false);
   const chatEndRef                        = useRef(null);
   const prevCount                         = useRef(0);
   const theme                             = THEMES[currentTheme];
-  const selectedQuestRef                  = useRef(selectedQuest);
+  // Ref is kept in sync synchronously (not via useEffect) to prevent race
+  // conditions where the polling loop re-opens a just-closed comms panel.
+  const selectedQuestRef                  = useRef(null);
+  const xpTimerRef                        = useRef(null);
 
-  useEffect(() => {
-    selectedQuestRef.current = selectedQuest;
-  }, [selectedQuest]);
+  // Close comms: clear ref FIRST (synchronously), then clear state.
+  // This ensures any in-flight refresh() async calls see null immediately.
+  const closeComms = useCallback(() => {
+    selectedQuestRef.current = null;
+    setSelectedQuest(null);
+  }, []);
+
+  // XP button 2-second celebrate animation
+  const handleXpClick = useCallback(() => {
+    if (xpClicked) return;
+    setXpClicked(true);
+    clearTimeout(xpTimerRef.current);
+    xpTimerRef.current = setTimeout(() => setXpClicked(false), 2000);
+  }, [xpClicked]);
+
+  // Cleanup XP timer on unmount
+  useEffect(() => () => clearTimeout(xpTimerRef.current), []);
+
+  // Quirky button helpers
+  const fireButtonAnim = useCallback((setter, duration = 600) => {
+    setter(true);
+    setTimeout(() => setter(false), duration);
+  }, []);
+
 
   const refresh = async () => {
     try {
@@ -82,10 +109,16 @@ function App() {
   };
 
   const openChat = async (b) => {
+    // Sync ref immediately so the polling loop can update messages for this bounty
+    selectedQuestRef.current = b;
     setSelectedQuest(b);
     try {
       const { data } = await axios.get(`${API}/bounties/${b._id}`);
-      setSelectedQuest(data);
+      // Only update if user hasn't closed comms in the meantime
+      if (selectedQuestRef.current) {
+        selectedQuestRef.current = data;
+        setSelectedQuest(data);
+      }
     } catch (err) {
       console.error("Failed to load chat details:", err);
     }
@@ -99,13 +132,11 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setSelectedQuest(null);
-      }
+      if (e.key === 'Escape') closeComms();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [closeComms]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -164,15 +195,13 @@ function App() {
   const bgStyle    = { backgroundColor: theme.bg, color: theme.text };
   const cardStyle  = { backgroundColor: theme.card, borderColor: theme.accent, color: theme.text };
   const inputStyle = { backgroundColor: 'transparent', borderColor: theme.accent, color: theme.text };
-  const isThemeDark = ['punk', 'dark', 'haze'].includes(currentTheme);
-  const optionStyle = {
-    backgroundColor: isThemeDark ? '#1e1e1e' : '#ffffff',
-    color: isThemeDark ? '#ffffff' : '#172b4d',
-  };
 
   return (
     <div className="min-h-screen transition-theme animate-fade-in" style={bgStyle}>
-      {/* Ambient background */}
+      {/* Three.js ambient background */}
+      <ThreeBackground theme={theme} />
+
+      {/* Ambient CSS orbs (complementary to Three.js) */}
       <div className="bg-grid" />
       <div className="orb orb-1" style={{ backgroundColor: theme.orb1 }} />
       <div className="orb orb-2" style={{ backgroundColor: theme.orb2 }} />
@@ -214,8 +243,11 @@ function App() {
 
             <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <button
-                onClick={() => setView(view === 'admin' ? 'market' : 'admin')}
-                className="nav-tab"
+                onClick={() => {
+                  fireButtonAnim(setNavAnim, 350);
+                  setView(view === 'admin' ? 'market' : 'admin');
+                }}
+                className={`nav-tab ${navAnim ? 'btn-nav-popping' : ''}`}
                 style={{
                   backgroundColor: view === 'admin' ? theme.button : 'transparent',
                   borderColor: theme.button,
@@ -247,11 +279,15 @@ function App() {
               {/* XP Counter */}
               <button
                 key={xpAnimKey}
-                onClick={() => {}}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count"
-                style={{ backgroundColor: theme.card, borderColor: theme.zap }}
+                onClick={handleXpClick}
+                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-celebrate' : ''}`}
+                style={{
+                  backgroundColor: theme.card,
+                  borderColor: theme.zap,
+                  '--zap-rgb': hexToRgb(theme.zap),
+                }}
               >
-                <Zap size={20} style={{ color: theme.zap }} fill="currentColor" />
+                <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
                 <span className="text-lg font-black">{xp} XP</span>
               </button>
 
@@ -362,13 +398,7 @@ function App() {
                       theme={theme}
                       placeholder="Time Estimate"
                     />
-                    <button
-                      type="submit"
-                      className="btn-action"
-                      style={{ backgroundColor: theme.button, color: '#fff' }}
-                    >
-                      📡 Broadcast
-                    </button>
+                    <BroadcastButton theme={theme} />
                   </form>
 
                   {/* Live stats */}
@@ -522,6 +552,15 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
   const isResolved = b.status === 'resolved';
   const delayClass = `card-delay-${Math.min(index + 1, 6)}`;
 
+  const [claimAnim,   setClaimAnim]   = useState(false);
+  const [resolveAnim, setResolveAnim] = useState(false);
+  const [commsAnim,   setCommsAnim]   = useState(false);
+
+  const fire = (setter, duration = 600) => {
+    setter(true);
+    setTimeout(() => setter(false), duration);
+  };
+
   const categoryColors = {
     Engineering: '#3b82f6', Design: '#ec4899', Research: '#8b5cf6',
     Marketing: '#f59e0b', Finance: '#10b981', Other: '#6b7280'
@@ -567,8 +606,8 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
       <div className="space-y-2">
         {isOpen && (
           <button
-            onClick={() => onAction(b._id, 'claim')}
-            className="btn-action"
+            onClick={() => { fire(setClaimAnim, 550); onAction(b._id, 'claim'); }}
+            className={`btn-action ${claimAnim ? 'btn-claiming' : ''}`}
             style={{ backgroundColor: theme.highlight, color: theme.bg }}
           >
             ⚡ Claim Bounty
@@ -576,8 +615,8 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
         )}
         {isClaimed && (
           <button
-            onClick={() => onAction(b._id, 'resolve')}
-            className="btn-action"
+            onClick={() => { fire(setResolveAnim, 650); onAction(b._id, 'resolve'); }}
+            className={`btn-action ${resolveAnim ? 'btn-resolving' : ''}`}
             style={{ backgroundColor: '#22c55e', color: '#fff' }}
           >
             ✅ Mark Complete
@@ -590,8 +629,8 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
         )}
         {(isClaimed || isResolved) && (b.requesterName === currentUser || b.claimerName === currentUser) && (
           <button
-            onClick={() => onChat(b)}
-            className="btn-action"
+            onClick={() => { fire(setCommsAnim, 500); onChat(b); }}
+            className={`btn-action ${commsAnim ? 'btn-comms-open' : ''}`}
             style={{ backgroundColor: 'transparent', border: `2px solid ${theme.accent}`, color: theme.text }}
           >
             💬 Open Comms
@@ -599,6 +638,30 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
         )}
       </div>
     </div>
+  );
+}
+
+function BroadcastButton({ theme }) {
+  const [anim, setAnim] = useState(false);
+
+  const handleClick = () => {
+    setAnim(true);
+    setTimeout(() => setAnim(false), 650);
+  };
+
+  return (
+    <button
+      type="submit"
+      onClick={handleClick}
+      className={`btn-action ${anim ? 'btn-broadcasting' : ''}`}
+      style={{
+        backgroundColor: theme.button,
+        color: '#fff',
+        '--btn-rgb': hexToRgb(theme.button),
+      }}
+    >
+      📡 Broadcast
+    </button>
   );
 }
 
