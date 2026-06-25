@@ -279,19 +279,20 @@ function App() {
               </div>
 
               {/* XP Counter */}
-              <button
-                key={xpAnimKey}
-                onClick={handleXpClick}
-                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-inferno' : ''}`}
-                style={{
-                  backgroundColor: theme.card,
-                  borderColor: theme.zap,
-                  '--zap-rgb': hexToRgb(theme.zap),
-                }}
-              >
-                <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
-                <span className="text-lg font-black">{xp} XP</span>
-              </button>
+              <div key={xpAnimKey} className="animate-count">
+                <button
+                  onClick={handleXpClick}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter ${xpClicked ? 'xp-inferno' : ''}`}
+                  style={{
+                    backgroundColor: theme.card,
+                    borderColor: theme.zap,
+                    '--zap-rgb': hexToRgb(theme.zap),
+                  }}
+                >
+                  <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
+                  <span className="text-lg font-black">{xp} XP</span>
+                </button>
+              </div>
 
               {/* Theme Picker */}
               <div className="relative">
@@ -360,11 +361,11 @@ function App() {
 
               {/* Post Form */}
               <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-                <div className="border-2 p-8 rounded-[2.5rem] shadow-2xl glass kb-form-card lg:sticky lg:top-28 transition-theme" style={{ ...cardStyle, '--accent-rgb': hexToRgb(theme.button) }}>
-                  <h2 className="text-xs font-black uppercase mb-6 flex items-center gap-2" style={{ color: theme.subText }}>
+                <div className="border-2 p-6 rounded-3xl shadow-2xl glass kb-form-card lg:sticky lg:top-28 transition-theme" style={{ ...cardStyle, '--accent-rgb': hexToRgb(theme.button) }}>
+                  <h2 className="text-xs font-black uppercase mb-5 flex items-center gap-2" style={{ color: theme.subText }}>
                     <Plus size={16} /> New Broadcast
                   </h2>
-                  <form className="space-y-4" onSubmit={onSubmit}>
+                  <form className="space-y-3" onSubmit={onSubmit}>
                     <input
                       className="kb-input transition-theme"
                       style={inputStyle}
@@ -407,7 +408,7 @@ function App() {
                   </form>
 
                   {/* Live stats */}
-                  <div className="mt-8 pt-6 border-t flex justify-between text-center" style={{ borderColor: theme.accent }}>
+                  <div className="mt-6 pt-5 border-t flex justify-between text-center" style={{ borderColor: theme.accent }}>
                     <div>
                       <div className="text-2xl font-black" style={{ color: theme.highlight }}>{marketplaceBounties.length}</div>
                       <div className="text-xs font-bold uppercase" style={{ color: theme.subText }}>Open</div>
