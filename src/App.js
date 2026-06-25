@@ -54,6 +54,11 @@ function App() {
   const chatEndRef                        = useRef(null);
   const prevCount                         = useRef(0);
   const theme                             = THEMES[currentTheme];
+  const selectedQuestRef                  = useRef(selectedQuest);
+
+  useEffect(() => {
+    selectedQuestRef.current = selectedQuest;
+  }, [selectedQuest]);
 
   const refresh = async () => {
     try {
@@ -65,11 +70,25 @@ function App() {
       prevCount.current = data.length;
       setBounties(data);
       setLoading(false);
-      if (selectedQuest) {
-        const updated = data.find(b => b._id === selectedQuest._id);
-        if (updated) setSelectedQuest(updated);
+      if (selectedQuestRef.current) {
+        try {
+          const { data: updatedBounty } = await axios.get(`${API}/bounties/${selectedQuestRef.current._id}`);
+          if (updatedBounty) setSelectedQuest(updatedBounty);
+        } catch (err) {
+          console.error("Failed to refresh active bounty chat:", err);
+        }
       }
     } catch { setLoading(false); }
+  };
+
+  const openChat = async (b) => {
+    setSelectedQuest(b);
+    try {
+      const { data } = await axios.get(`${API}/bounties/${b._id}`);
+      setSelectedQuest(data);
+    } catch (err) {
+      console.error("Failed to load chat details:", err);
+    }
   };
 
   useEffect(() => {
@@ -138,8 +157,8 @@ function App() {
   };
 
   const marketplaceBounties = bounties.filter(b => b.status === 'open');
-  const myClaims            = bounties.filter(b => (b.status === 'claimed' || b.status === 'resolved') && (b.claimerName === requesterName || b.requesterName === requesterName));
-  const totalPoints         = bounties.filter(b => b.status === 'resolved' && (b.claimerName === requesterName || b.requesterName === requesterName)).length * 50;
+  const myClaims            = bounties.filter(b => b.status === 'claimed' || b.status === 'resolved');
+  const totalPoints         = bounties.filter(b => b.status === 'resolved').length * 50;
   const xp                  = 1240 + totalPoints;
 
   const bgStyle    = { backgroundColor: theme.bg, color: theme.text };
@@ -206,6 +225,25 @@ function App() {
                 {view === 'admin' ? '← Market' : 'Dashboard'}
               </button>
 
+              {/* User Identity Selector */}
+              <div 
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border shadow-xl glass transition-theme" 
+                style={{ backgroundColor: theme.card, borderColor: `${theme.accent}30` }}
+              >
+                <span className="text-xs font-black uppercase opacity-60 tracking-wider" style={{ color: theme.subText }}>Identity:</span>
+                <input
+                  type="text"
+                  className="bg-transparent border-none outline-none text-sm font-black w-24 text-center cursor-pointer hover:underline"
+                  style={{ color: theme.highlight }}
+                  value={requesterName}
+                  onChange={e => {
+                    setRequesterName(e.target.value);
+                    localStorage.setItem('kb_user_name', e.target.value);
+                  }}
+                  title="Click to change active simulated user identity"
+                />
+              </div>
+
               {/* XP Counter */}
               <button
                 key={xpAnimKey}
@@ -271,7 +309,7 @@ function App() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {myClaims.map((b, i) => (
-                    <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} currentUser={requesterName} />
+                    <BountyCard key={b._id} b={b} onAction={handleAction} onChat={openChat} theme={theme} index={i} currentUser={requesterName} />
                   ))}
                 </div>
               )}
@@ -365,7 +403,7 @@ function App() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {marketplaceBounties.map((b, i) => (
-                      <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} currentUser={requesterName} />
+                      <BountyCard key={b._id} b={b} onAction={handleAction} onChat={openChat} theme={theme} index={i} currentUser={requesterName} />
                     ))}
                   </div>
                 )}
@@ -411,6 +449,19 @@ function App() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-3">
+            {/* Involved Parties Simulation Tip */}
+            <div 
+              className="p-3 mb-2 rounded-2xl text-xs font-semibold border flex flex-col gap-1 transition-all"
+              style={{ backgroundColor: `${theme.accent}10`, borderColor: `${theme.accent}30`, color: theme.subText }}
+            >
+              <div className="flex items-center gap-1.5 font-bold" style={{ color: theme.text }}>
+                <span>💡</span> Simulation Tip
+              </div>
+              <p>
+                To reply as the other party (<strong>{selectedQuest.requesterName === requesterName ? selectedQuest.claimerName || 'Expert' : selectedQuest.requesterName}</strong>), change your user identity in the top header.
+              </p>
+            </div>
+
             {(!selectedQuest.messages || selectedQuest.messages.length === 0) ? (
               <div className="empty-state" style={{ color: theme.subText }}>
                 <p className="text-sm font-bold">No messages yet. Start the conversation!</p>
