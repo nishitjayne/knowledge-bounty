@@ -289,8 +289,8 @@ function App() {
                     '--zap-rgb': hexToRgb(theme.zap),
                   }}
                 >
-                  <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
-                  <span className="text-lg font-black">{xp} XP</span>
+                  <Zap size={20} className="xp-zap-icon relative z-10" style={{ color: theme.zap }} fill="currentColor" />
+                  <span className="text-lg font-black relative z-10 xp-content">{xp} XP</span>
                 </button>
               </div>
 
