@@ -202,11 +202,8 @@ function App() {
       {/* Three.js ambient background */}
       <ThreeBackground theme={theme} />
 
-      {/* Ambient CSS orbs (complementary to Three.js) */}
+      {/* Ambient Grid */}
       <div className="bg-grid" />
-      <div className="orb orb-1" style={{ backgroundColor: theme.orb1 }} />
-      <div className="orb orb-2" style={{ backgroundColor: theme.orb2 }} />
-      <div className="orb orb-3" style={{ backgroundColor: theme.highlight }} />
 
       {/* Notification toast */}
       {notification && (
