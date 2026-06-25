@@ -301,10 +301,14 @@ export default function ThreeBackground({ theme }) {
       // Current theme (read once per frame for all color lerps)
       const ct = themeRef.current;
 
-      // Lerp target watermark color toward theme button color
-      const targetThemeColor = hexToColor(ct.button || '#bb86fc');
+      // Lerp target watermark color toward theme watermark color
+      const targetThemeColor = hexToColor(ct.watermarkColor || ct.button || '#bb86fc');
       lerpColor(ringMat.color,  targetThemeColor, 0.02);
       lerpColor(crossMat.color, targetThemeColor, 0.02);
+      
+      const targetOpacity = ct.targetOpacity || 0.15;
+      ringMat.opacity += (targetOpacity - ringMat.opacity) * 0.02;
+      crossMat.opacity += ((targetOpacity + 0.03) - crossMat.opacity) * 0.02;
 
       // Smooth star color transitions
       lerpColor(starUniforms.uStarColor.value, hexToColor(ct.highlight || '#ffffff'), 0.025);

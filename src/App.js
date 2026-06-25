@@ -12,12 +12,12 @@ import './index.css';
 const API = "/api";
 
 const THEMES = {
-  professional: { name: 'Professional', bg: '#f4f5f7', card: '#ffffff', text: '#172b4d', subText: '#5e6c84', accent: '#dfe1e6', button: '#0052cc', highlight: '#0052cc', zap: '#ff991f', orb1: '#0052cc', orb2: '#ff991f' },
-  punk:         { name: 'Punk',         bg: '#000000', card: '#111111', text: '#e0e0e0', subText: '#f50057', accent: '#333', button: '#f50057', highlight: '#ffea00', zap: '#00e5ff', orb1: '#f50057', orb2: '#00e5ff' },
-  glossy:       { name: 'Glossy',       bg: '#f0f2f5', card: 'rgba(255,255,255,0.85)', text: '#333333', subText: '#666666', accent: '#ccc', button: '#ea4c89', highlight: '#4facfe', zap: '#ff0844', orb1: '#ea4c89', orb2: '#4facfe' },
-  dark:         { name: 'Dark',         bg: '#121212', card: '#1e1e1e', text: '#ffffff', subText: '#a0a0a0', accent: '#333', button: '#bb86fc', highlight: '#03dac6', zap: '#cf6679', orb1: '#bb86fc', orb2: '#03dac6' },
-  spring:       { name: 'Spring',       bg: '#fdfbfb', card: '#ffffff', text: '#2d3436', subText: '#636e72', accent: '#ffeaa7', button: '#00b894', highlight: '#fdcb6e', zap: '#e17055', orb1: '#00b894', orb2: '#fdcb6e' },
-  haze:         { name: 'Haze',         bg: '#2c3e50', card: '#34495e', text: '#ecf0f1', subText: '#bdc3c7', accent: '#7f8c8d', button: '#9b59b6', highlight: '#e74c3c', zap: '#f1c40f', orb1: '#9b59b6', orb2: '#e74c3c' },
+  professional: { name: 'Professional', bg: '#f4f5f7', card: '#ffffff', text: '#172b4d', subText: '#5e6c84', accent: '#dfe1e6', button: '#0052cc', highlight: '#0052cc', zap: '#ff991f', watermarkColor: '#0040A0', targetOpacity: 0.35 },
+  punk:         { name: 'Punk',         bg: '#000000', card: '#111111', text: '#e0e0e0', subText: '#f50057', accent: '#333', button: '#f50057', highlight: '#ffea00', zap: '#00e5ff', watermarkColor: '#f50057', targetOpacity: 0.18 },
+  glossy:       { name: 'Glossy',       bg: '#f0f2f5', card: 'rgba(255,255,255,0.85)', text: '#333333', subText: '#666666', accent: '#ccc', button: '#ea4c89', highlight: '#4facfe', zap: '#ff0844', watermarkColor: '#d81b60', targetOpacity: 0.35 },
+  dark:         { name: 'Dark',         bg: '#121212', card: '#1e1e1e', text: '#ffffff', subText: '#a0a0a0', accent: '#333', button: '#bb86fc', highlight: '#03dac6', zap: '#cf6679', watermarkColor: '#bb86fc', targetOpacity: 0.15 },
+  spring:       { name: 'Spring',       bg: '#fdfbfb', card: '#ffffff', text: '#2d3436', subText: '#636e72', accent: '#ffeaa7', button: '#00b894', highlight: '#fdcb6e', zap: '#e17055', watermarkColor: '#00856A', targetOpacity: 0.45 },
+  haze:         { name: 'Haze',         bg: '#2c3e50', card: '#34495e', text: '#ecf0f1', subText: '#bdc3c7', accent: '#7f8c8d', button: '#9b59b6', highlight: '#e74c3c', zap: '#f1c40f', watermarkColor: '#9b59b6', targetOpacity: 0.15 },
 };
 
 const hexToRgb = (hex) => {
