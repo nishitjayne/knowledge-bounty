@@ -17,7 +17,7 @@
 ## ✨ Features
 
 - **⚡ Race-Condition-Proof Claiming**: Uses MongoDB's atomic operations (`findOneAndUpdate`) so that only one developer can claim a bounty under concurrent requests.
-- **🎨 Dynamic Theming & Ambient Lighting**: 6 interactive themes (Professional, Dark, Punk, Glossy, Spring, Haze) featuring custom HSL palettes, smooth animations, and animated ambient background orbs.
+- **🎨 Dynamic Theming & Beautiful UX**: 6 interactive themes (Professional, Dark, Punk, Glossy, Spring, Haze) featuring custom HSL palettes, quirky micro-animations (like the fiery XP burst!), and a subliminal Three.js floating starfield with a dynamic target watermark.
 - **💬 Live Comms Sidebar**: Dedicated slider drawer for per-bounty chats with auto-scrolling and capped history.
 - **📊 Real-time Stats & XP**: Counter dashboard showing live metrics (Open, Active, Resolved), rewarding XP upon mission completion accompanied by confetti explosions.
 - **📱 Responsive Layout**: Mobile-first design where the sidebar adapts to a bottom drawer on smaller viewports.
