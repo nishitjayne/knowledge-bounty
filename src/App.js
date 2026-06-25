@@ -454,7 +454,7 @@ function App() {
       {selectedQuest && (
         <div 
           className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 animate-fade-in"
-          onClick={() => setSelectedQuest(null)}
+          onClick={closeComms}
           style={{ cursor: 'pointer' }}
         />
       )}
