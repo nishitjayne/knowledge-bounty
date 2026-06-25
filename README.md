@@ -14,6 +14,16 @@
 
 ---
 
+## 🎯 Purpose
+
+**Knowledge Bounty** is designed to solve the problem of knowledge silos and blocked workflows in fast-paced engineering teams and large organizations. 
+
+Often, developers or team members get stuck on specific niche problems (e.g., a weird DevOps bug, a complex database query, or a specific API integration). Instead of pinging individuals directly or waiting hours in support channels, they can **"Broadcast a Bounty"**. 
+
+Other team members with the right expertise can instantly see the bounty, **claim it**, and jump into a dedicated **live comms channel** to help resolve it. In return, they earn XP and climb the internal leaderboard, gamifying peer-to-peer support and creating a highly collaborative, fast-moving engineering culture.
+
+---
+
 ## ✨ Features
 
 - **⚡ Race-Condition-Proof Claiming**: Uses MongoDB's atomic operations (`findOneAndUpdate`) so that only one developer can claim a bounty under concurrent requests.
