@@ -20,7 +20,7 @@
 
 Often, developers or team members get stuck on specific niche problems (e.g., a weird DevOps bug, a complex database query, or a specific API integration). Instead of pinging individuals directly or waiting hours in support channels, they can **"Broadcast a Bounty"**. 
 
-Other team members with the right expertise can instantly see the bounty, **claim it**, and jump into a dedicated **live comms channel** to help resolve it. In return, they earn XP and climb the internal leaderboard, gamifying peer-to-peer support and creating a highly collaborative, fast-moving engineering culture.
+Other team members with the right expertise can instantly see the bounty, **claim it**, and jump into a dedicated **live comms channel** to help resolve it. In return, they earn XP and climb the internal leaderboard, gamifying peer-to-peer support and creating a highly collaborative, fast-moving engineering culture. **Companies can then use these XP leaderboards to identify helpful teammates and offer tangible rewards for being an exceptional, knowledge-sharing employee.**
 
 ---
 
