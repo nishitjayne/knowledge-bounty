@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import {
   Trophy, Plus, Zap, X, Send,
-  Target, Palette, CheckCircle2, Flame, Clock, Tag, ChevronDown
+  Target, Palette, CheckCircle2, Flame, Clock, Tag, ChevronDown,
+  Radio, MessageSquare, Gift, Lightbulb, Lock, ShieldCheck
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import ThreeBackground from './ThreeBackground';
@@ -91,7 +92,7 @@ function App() {
     try {
       const { data } = await axios.get(`${API}/bounties`);
       if (data.length > prevCount.current && prevCount.current !== 0) {
-        setNotification("⚡ New Signal Detected!");
+        setNotification({ icon: 'zap',   text: 'New Signal Detected!' });
         setTimeout(() => setNotification(null), 4000);
       }
       prevCount.current = data.length;
@@ -155,7 +156,7 @@ function App() {
         requesterName: requesterName.trim() || 'Nishit J.'
       });
       setTitle(''); setReward(''); setCategory('');
-      setNotification("📡 Broadcast Sent!");
+      setNotification({ icon: 'radio',  text: 'Broadcast Sent!' });
       setTimeout(() => setNotification(null), 3000);
       refresh();
     } catch { alert("Server Error"); }
@@ -170,18 +171,18 @@ function App() {
       }
       if (action === 'resolve') {
         confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: [theme.highlight, theme.zap, theme.button] });
-        setNotification("🏆 Mission Complete!");
+        setNotification({ icon: 'trophy', text: 'Mission Complete!' });
         setTimeout(() => setNotification(null), 4000);
         setXpAnimKey(k => k + 1);
       }
       if (action === 'claim') {
-        setNotification("🔒 Bounty Secured!");
+        setNotification({ icon: 'lock',   text: 'Bounty Secured!' });
         setTimeout(() => setNotification(null), 3000);
       }
       refresh();
     } catch (err) {
       if (err.response?.status === 409) {
-        alert("⚠️ TOO SLOW! Another agent secured this bounty.");
+        alert("TOO SLOW! Another agent secured this bounty.");
         refresh();
       }
     }
@@ -210,10 +211,14 @@ function App() {
       {/* Notification toast */}
       {notification && (
         <div
-          className="fixed top-6 left-1/2 z-[100] px-6 py-3 rounded-2xl font-black text-white shadow-2xl glass animate-notification"
+          className="fixed top-6 left-1/2 z-[100] px-6 py-3 rounded-2xl font-black text-white shadow-2xl glass animate-notification flex items-center gap-2"
           style={{ transform: 'translateX(-50%)', backgroundColor: theme.button }}
         >
-          {notification}
+          {notification.icon === 'zap'    && <Zap size={16} fill="currentColor" />}
+          {notification.icon === 'radio'  && <Radio size={16} />}
+          {notification.icon === 'trophy' && <Trophy size={16} />}
+          {notification.icon === 'lock'   && <Lock size={16} />}
+          {notification.text}
         </div>
       )}
 
@@ -280,15 +285,31 @@ function App() {
               <button
                 key={xpAnimKey}
                 onClick={handleXpClick}
-                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-celebrate' : ''}`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter animate-count ${xpClicked ? 'xp-bull-charge' : ''}`}
                 style={{
                   backgroundColor: theme.card,
                   borderColor: theme.zap,
                   '--zap-rgb': hexToRgb(theme.zap),
                 }}
               >
-                <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
-                <span className="text-lg font-black">{xp} XP</span>
+                {/* Label sits above the bull via z-index */}
+                <span className="xp-label">
+                  <Zap size={20} className="xp-zap-icon" style={{ color: theme.zap }} fill="currentColor" />
+                  <span className="text-lg font-black">{xp} XP</span>
+                </span>
+                {/* Bull charges across on click */}
+                {xpClicked && (
+                  <>
+                    <BullRunner style={{ color: theme.zap }} />
+                    <div className="xp-dust" style={{ backgroundColor: theme.zap }} />
+                    <svg className="xp-star" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                      <path
+                        d="M9 0 L10.8 6.3 L18 9 L10.8 11.7 L9 18 L7.2 11.7 L0 9 L7.2 6.3 Z"
+                        fill={theme.zap}
+                      />
+                    </svg>
+                  </>
+                )}
               </button>
 
               {/* Theme Picker */}
@@ -316,7 +337,10 @@ function App() {
                           backgroundColor: currentTheme === tKey ? theme.accent : 'transparent'
                         }}
                       >
-                        {currentTheme === tKey && '✓ '}{THEMES[tKey].name}
+                        <span className="flex items-center gap-1.5">
+                          {currentTheme === tKey && <CheckCircle2 size={12} />}
+                          {THEMES[tKey].name}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -464,12 +488,12 @@ function App() {
               <h2 className="text-sm font-black uppercase tracking-wider" style={{ color: theme.subText }}>Comms</h2>
               <p className="font-bold text-sm mt-1 break-words leading-tight">{selectedQuest.title}</p>
               <div className="flex flex-wrap items-center gap-2 mt-2 text-xs font-bold" style={{ color: theme.subText }}>
-                <span style={{ color: theme.highlight }}>🎁 {selectedQuest.reward}</span>
+                <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={11} /> {selectedQuest.reward}</span>
                 <span>by {selectedQuest.requesterName}</span>
               </div>
             </div>
             <button
-              onClick={() => setSelectedQuest(null)}
+              onClick={closeComms}
               className="p-2 rounded-xl hover:opacity-80 transition-all flex items-center justify-center flex-shrink-0 self-start mt-1"
               style={{ color: theme.text, backgroundColor: `${theme.accent}20` }}
               title="Close Comms"
@@ -485,7 +509,7 @@ function App() {
               style={{ backgroundColor: `${theme.accent}10`, borderColor: `${theme.accent}30`, color: theme.subText }}
             >
               <div className="flex items-center gap-1.5 font-bold" style={{ color: theme.text }}>
-                <span>💡</span> Simulation Tip
+                <Lightbulb size={13} style={{ color: theme.highlight }} /> Simulation Tip
               </div>
               <p>
                 To reply as the other party (<strong>{selectedQuest.requesterName === requesterName ? selectedQuest.claimerName || 'Expert' : selectedQuest.requesterName}</strong>), change your user identity in the top header.
@@ -598,7 +622,7 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
       <h3 className="text-lg font-black mb-2 leading-tight">{b.title}</h3>
 
       <div className="flex items-center gap-4 mb-4 text-xs font-bold" style={{ color: theme.subText }}>
-        <span style={{ color: theme.highlight }}>🎁 {b.reward}</span>
+        <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={11} /> {b.reward}</span>
         {b.timeEstimate && <span className="flex items-center gap-1"><Clock size={11} />{b.timeEstimate}</span>}
         <span>by {b.requesterName}</span>
       </div>
@@ -610,7 +634,7 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
             className={`btn-action ${claimAnim ? 'btn-claiming' : ''}`}
             style={{ backgroundColor: theme.highlight, color: theme.bg }}
           >
-            ⚡ Claim Bounty
+            <span className="flex items-center justify-center gap-2"><Zap size={14} fill="currentColor" /> Claim Bounty</span>
           </button>
         )}
         {isClaimed && (
@@ -619,12 +643,12 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
             className={`btn-action ${resolveAnim ? 'btn-resolving' : ''}`}
             style={{ backgroundColor: '#22c55e', color: '#fff' }}
           >
-            ✅ Mark Complete
+            <span className="flex items-center justify-center gap-2"><CheckCircle2 size={14} /> Mark Complete</span>
           </button>
         )}
         {isResolved && (
-          <div className="text-center font-black text-sm py-3 animate-float" style={{ color: theme.highlight }}>
-            🏆 Mission Secured
+          <div className="text-center font-black text-sm py-3 animate-float flex items-center justify-center gap-2" style={{ color: theme.highlight }}>
+            <ShieldCheck size={15} /> Mission Secured
           </div>
         )}
         {(isClaimed || isResolved) && (b.requesterName === currentUser || b.claimerName === currentUser) && (
@@ -633,7 +657,7 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
             className={`btn-action ${commsAnim ? 'btn-comms-open' : ''}`}
             style={{ backgroundColor: 'transparent', border: `2px solid ${theme.accent}`, color: theme.text }}
           >
-            💬 Open Comms
+            <span className="flex items-center justify-center gap-2"><MessageSquare size={14} /> Open Comms</span>
           </button>
         )}
       </div>
@@ -660,7 +684,7 @@ function BroadcastButton({ theme }) {
         '--btn-rgb': hexToRgb(theme.button),
       }}
     >
-      📡 Broadcast
+      <span className="flex items-center justify-center gap-2"><Radio size={15} /> Broadcast</span>
     </button>
   );
 }
@@ -738,6 +762,57 @@ function CustomDropdown({ value, onChange, options, theme, placeholder }) {
         ))}
       </div>
     </div>
+  );
+}
+
+// ─── BullRunner ─────────────────────────────────────────────────────────────
+// Cartoon charging bull SVG that runs across the XP button.
+// Uses currentColor so it inherits theme.zap from the parent style prop.
+function BullRunner({ style }) {
+  return (
+    <svg
+      className="xp-bull-runner"
+      style={style}
+      viewBox="-2 -2 62 42"
+      width="50"
+      height="32"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      {/* Body — elongated for charging pose */}
+      <ellipse cx="22" cy="24" rx="17" ry="9" />
+
+      {/* Neck flowing into head */}
+      <path d="M35 17 C40 12 46 14 47 21 L46 28 C42 30 37 27 34 23 Z" />
+
+      {/* Horns pointing forward (charging) */}
+      <path d="M43 15 L52 5"  stroke="currentColor" strokeWidth="3"   strokeLinecap="round" fill="none" />
+      <path d="M40 15 L48 4"  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+
+      {/* Eye — angry cartoon dot */}
+      <circle cx="44" cy="19" r="2.2" fill="white" />
+      <circle cx="44.8" cy="19.5" r="1.1" fill="#111" />
+
+      {/* Angry brow */}
+      <path d="M41 16 Q45 14 49 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+
+      {/* Nose */}
+      <ellipse cx="49" cy="25" rx="2.8" ry="2" opacity="0.55" />
+
+      {/* Running legs — splayed for speed */}
+      <path d="M30 31 L26 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
+      <path d="M36 31 L41 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
+      <path d="M14 31 L10 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
+      <path d="M20 31 L22 39" stroke="currentColor" strokeWidth="4"   strokeLinecap="round" fill="none" />
+
+      {/* Tail — up and curved (excited/charging) */}
+      <path d="M6 20 Q0 11 4 6"   stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+      <circle cx="4" cy="6" r="3" />
+
+      {/* Speed steam lines from nostrils */}
+      <path d="M52 23 L58 21" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.7" />
+      <path d="M52 26 L58 27" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.45" />
+    </svg>
   );
 }
 
