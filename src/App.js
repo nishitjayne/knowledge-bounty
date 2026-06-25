@@ -74,9 +74,19 @@ function App() {
 
   useEffect(() => {
     refresh();
-    const int = setInterval(refresh, 3000);
+    const int = setInterval(refresh, selectedQuest ? 1000 : 3000);
     return () => clearInterval(int);
-  }, [selectedQuest?._id]);
+  }, [selectedQuest?._id, selectedQuest]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedQuest(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -103,7 +113,11 @@ function App() {
 
   const handleAction = async (id, action) => {
     try {
-      await axios.patch(`${API}/bounties/${id}/${action}`); // now /claim or /resolve
+      if (action === 'claim') {
+        await axios.patch(`${API}/bounties/${id}/claim`, { claimerName: requesterName });
+      } else {
+        await axios.patch(`${API}/bounties/${id}/${action}`);
+      }
       if (action === 'resolve') {
         confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 }, colors: [theme.highlight, theme.zap, theme.button] });
         setNotification("🏆 Mission Complete!");
@@ -124,8 +138,8 @@ function App() {
   };
 
   const marketplaceBounties = bounties.filter(b => b.status === 'open');
-  const myClaims            = bounties.filter(b => b.status === 'claimed' || b.status === 'resolved');
-  const totalPoints         = bounties.filter(b => b.status === 'resolved').length * 50;
+  const myClaims            = bounties.filter(b => (b.status === 'claimed' || b.status === 'resolved') && (b.claimerName === requesterName || b.requesterName === requesterName));
+  const totalPoints         = bounties.filter(b => b.status === 'resolved' && (b.claimerName === requesterName || b.requesterName === requesterName)).length * 50;
   const xp                  = 1240 + totalPoints;
 
   const bgStyle    = { backgroundColor: theme.bg, color: theme.text };
@@ -257,7 +271,7 @@ function App() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {myClaims.map((b, i) => (
-                    <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} />
+                    <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} currentUser={requesterName} />
                   ))}
                 </div>
               )}
@@ -351,7 +365,7 @@ function App() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {marketplaceBounties.map((b, i) => (
-                      <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} />
+                      <BountyCard key={b._id} b={b} onAction={handleAction} onChat={setSelectedQuest} theme={theme} index={i} currentUser={requesterName} />
                     ))}
                   </div>
                 )}
@@ -362,6 +376,15 @@ function App() {
         </main>
       </div>
 
+      {/* Chat Sidebar Backdrop */}
+      {selectedQuest && (
+        <div 
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 animate-fade-in"
+          onClick={() => setSelectedQuest(null)}
+          style={{ cursor: 'pointer' }}
+        />
+      )}
+
       {/* Chat Sidebar */}
       {selectedQuest && (
         <aside
@@ -369,13 +392,19 @@ function App() {
           style={{ width: 380, backgroundColor: theme.bg, borderColor: theme.accent }}
         >
           <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: theme.accent }}>
-            <div>
+            <div className="min-w-0 flex-1 pr-4">
               <h2 className="text-sm font-black uppercase tracking-wider" style={{ color: theme.subText }}>Comms</h2>
-              <p className="font-bold truncate text-sm mt-1">{selectedQuest.title}</p>
+              <p className="font-bold text-sm mt-1 break-words leading-tight">{selectedQuest.title}</p>
+              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs font-bold" style={{ color: theme.subText }}>
+                <span style={{ color: theme.highlight }}>🎁 {selectedQuest.reward}</span>
+                <span>by {selectedQuest.requesterName}</span>
+              </div>
             </div>
             <button
               onClick={() => setSelectedQuest(null)}
-              className="p-2 rounded-xl hover:opacity-70 transition-opacity"
+              className="p-2 rounded-xl hover:opacity-80 transition-all flex items-center justify-center flex-shrink-0 self-start mt-1"
+              style={{ color: theme.text, backgroundColor: `${theme.accent}20` }}
+              title="Close Comms"
             >
               <X size={18} />
             </button>
@@ -387,16 +416,19 @@ function App() {
                 <p className="text-sm font-bold">No messages yet. Start the conversation!</p>
               </div>
             ) : (
-              selectedQuest.messages.map((m, i) => (
-                <div
-                  key={i}
-                  className={`chat-bubble ${m.sender === 'Expert' ? 'chat-bubble-expert' : 'chat-bubble-other'}`}
-                  style={{ animationDelay: `${i * 0.05}s` }}
-                >
-                  <div className="text-xs font-bold mb-1 opacity-60">{m.sender}</div>
-                  {m.text}
-                </div>
-              ))
+              selectedQuest.messages.map((m, i) => {
+                const isMe = m.sender === requesterName;
+                return (
+                  <div
+                    key={i}
+                    className={`chat-bubble ${isMe ? 'chat-bubble-expert' : 'chat-bubble-other'}`}
+                    style={{ animationDelay: `${i * 0.05}s` }}
+                  >
+                    <div className="text-xs font-bold mb-1 opacity-60">{m.sender}</div>
+                    {m.text}
+                  </div>
+                );
+              })
             )}
             <div ref={chatEndRef} />
           </div>
@@ -405,7 +437,7 @@ function App() {
             onSubmit={async (e) => {
               e.preventDefault();
               if (!msg) return;
-              await axios.post(`${API}/bounties/${selectedQuest._id}/chat`, { sender: "Expert", text: msg });
+              await axios.post(`${API}/bounties/${selectedQuest._id}/chat`, { sender: requesterName, text: msg });
               setMsg('');
               refresh();
             }}
@@ -433,7 +465,7 @@ function App() {
   );
 }
 
-function BountyCard({ b, onAction, onChat, theme, index }) {
+function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
   const isOpen     = b.status === 'open';
   const isClaimed  = b.status === 'claimed';
   const isResolved = b.status === 'resolved';
@@ -505,7 +537,7 @@ function BountyCard({ b, onAction, onChat, theme, index }) {
             🏆 Mission Secured
           </div>
         )}
-        {(isClaimed || isResolved) && (
+        {(isClaimed || isResolved) && (b.requesterName === currentUser || b.claimerName === currentUser) && (
           <button
             onClick={() => onChat(b)}
             className="btn-action"

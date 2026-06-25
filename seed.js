@@ -349,7 +349,7 @@ const run = async () => {
     const id = create.body._id;
 
     await sleep(200);
-    const claim = await request('PATCH', `/bounties/${id}/claim`, {});
+    const claim = await request('PATCH', `/bounties/${id}/claim`, { claimerName: "Expert" });
     if (claim.status !== 200) { console.log(`   ❌ Claim failed`); continue; }
 
     await addMessages(id, messages);
@@ -365,7 +365,7 @@ const run = async () => {
     const id = create.body._id;
 
     await sleep(200);
-    await request('PATCH', `/bounties/${id}/claim`, {});
+    await request('PATCH', `/bounties/${id}/claim`, { claimerName: "Expert" });
     await sleep(200);
 
     await addMessages(id, messages);

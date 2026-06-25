@@ -79,6 +79,7 @@ const BountySchema = new mongoose.Schema(
     timeEstimate:  { type: String, default: '15M',         enum: ['5M','10M','15M','30M','1H','2H','4H'] },
     status:        { type: String, default: 'open',         enum: ['open','claimed','resolved'], index: true },
     requesterName: { type: String, default: 'Nishit J.',    maxlength: 60 },
+    claimerName:   { type: String, default: null,          maxlength: 60 },
     proposedTime:  { type: String, default: null },
     meetingStatus: { type: String, default: 'none' },
     // STRUCTURAL: Messages as a sub-document array — cap at 200 to prevent unbounded growth
@@ -212,9 +213,10 @@ app.patch('/api/bounties/:id/claim', async (req, res) => {
   if (!isValidId(req.params.id)) return res.status(400).json({ error: 'Invalid ID' });
 
   try {
+    const { claimerName } = req.body;
     const data = await Bounty.findOneAndUpdate(
       { _id: req.params.id, status: 'open' },   // ← atomic guard: only claim if open
-      { $set: { status: 'claimed' } },
+      { $set: { status: 'claimed', claimerName: claimerName || 'Expert' } },
       { new: true, lean: true }
     );
 
