@@ -446,8 +446,11 @@ body {
   .orb-2 { width: 150px; height: 150px; }
   .orb-3 { display: none; }
 
-  .bounty-card { padding: 1.25rem; border-radius: 1.5rem; }
+  .bounty-card { padding: 1rem; border-radius: 1rem; }
+  .bounty-card h3 { font-size: 1.1rem; }
   .bounty-card:hover { transform: translateY(-2px); }
+  
+  .btn-action { padding: 10px 16px; font-size: 0.75rem; border-radius: 1rem; }
 
   .chat-sidebar {
     width: 100% !important;
@@ -461,19 +464,90 @@ body {
 
   .header-flex {
     flex-direction: column;
-    gap: 1rem;
-    padding-top: 4rem;
+    gap: 0.75rem;
+    padding-top: 1rem;
+  }
+  
+  .header-flex .logo-icon {
+    padding: 0.5rem !important;
+    border-radius: 1rem !important;
+  }
+  
+  .header-flex .logo-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .header-flex h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  .nav-tab {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    border-radius: 1rem;
+  }
+  
+  .xp-counter {
+    padding: 6px 10px !important;
+    gap: 4px !important;
+    border-radius: 1rem !important;
+  }
+  
+  .xp-content {
+    font-size: 0.85rem !important;
+  }
+  
+  .xp-zap-icon {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  
+  .theme-btn {
+    padding: 8px !important;
+    border-radius: 1rem !important;
+  }
+  
+  .theme-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  .identity-selector {
+    padding: 6px 12px !important;
+    border-radius: 1rem !important;
+  }
+  .identity-selector span {
+    font-size: 0.65rem !important;
+  }
+  .identity-selector input {
+    font-size: 0.75rem !important;
+    width: 60px !important;
   }
 
   .kb-form-card {
     position: static !important;
-    border-radius: 1.5rem !important;
+    border-radius: 1.25rem !important;
+    padding: 1.25rem !important;
+  }
+  
+  .kb-input {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+  }
+  
+  .status-badge {
+    padding: 3px 8px;
+    font-size: 0.6rem;
   }
 }
 
 @media (max-width: 480px) {
-  .nav-tab { padding: 10px 18px; font-size: 0.75rem; }
-  .bounty-card { border-radius: 1.2rem; }
+  .nav-tab { padding: 6px 10px; font-size: 0.7rem; }
+  .bounty-card { padding: 0.875rem; border-radius: 1rem; }
+  .header-flex { padding-top: 1rem; gap: 0.5rem; }
+  .header-flex h1 { font-size: 1.5rem !important; }
 }
 
 /* ─── RESOLVED CONFETTI BURST ───────────────────── */

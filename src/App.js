@@ -238,12 +238,12 @@ function App() {
               <div className="p-4 rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
                 <Trophy size={34} className="text-white" />
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter uppercase select-none">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter uppercase select-none break-words text-center">
                 KNOWLEDGE<span style={{ color: theme.highlight }}>BOUNTY</span>
               </h1>
             </div>
 
-            <div className="flex items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="flex flex-wrap justify-center items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <button
                 onClick={() => {
                   fireButtonAnim(setNavAnim, 350);
@@ -261,7 +261,7 @@ function App() {
 
               {/* User Identity Selector */}
               <div 
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border shadow-xl glass transition-theme" 
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border shadow-xl glass transition-theme identity-selector" 
                 style={{ backgroundColor: theme.card, borderColor: `${theme.accent}30` }}
               >
                 <span className="text-xs font-black uppercase opacity-60 tracking-wider" style={{ color: theme.subText }}>Identity:</span>
@@ -282,15 +282,15 @@ function App() {
               <div key={xpAnimKey} className="animate-count">
                 <button
                   onClick={handleXpClick}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-2xl border-2 shadow-xl glass xp-counter ${xpClicked ? 'xp-inferno' : ''}`}
+                  className={`flex items-center gap-1.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border-2 shadow-xl glass xp-counter ${xpClicked ? 'xp-inferno' : ''}`}
                   style={{
                     backgroundColor: theme.card,
                     borderColor: theme.zap,
                     '--zap-rgb': hexToRgb(theme.zap),
                   }}
                 >
-                  <Zap size={20} className="xp-zap-icon relative z-10" style={{ color: theme.zap }} fill="currentColor" />
-                  <span className="text-lg font-black relative z-10 xp-content">{xp} XP</span>
+                  <Zap size={18} className="xp-zap-icon relative z-10" style={{ color: theme.zap }} fill="currentColor" />
+                  <span className="text-base sm:text-lg font-black relative z-10 xp-content">{xp} XP</span>
                 </button>
               </div>
 
@@ -601,9 +601,9 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
         </span>
       </div>
 
-      <h3 className="text-lg font-black mb-2 leading-tight">{b.title}</h3>
+      <h3 className="text-base sm:text-lg font-black mb-2 leading-tight break-words">{b.title}</h3>
 
-      <div className="flex items-center gap-4 mb-4 text-xs font-bold" style={{ color: theme.subText }}>
+      <div className="flex flex-wrap items-center gap-3 mb-4 text-xs font-bold" style={{ color: theme.subText }}>
         <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={11} /> {b.reward}</span>
         {b.timeEstimate && <span className="flex items-center gap-1"><Clock size={11} />{b.timeEstimate}</span>}
         <span>by {b.requesterName}</span>

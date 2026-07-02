@@ -295,7 +295,9 @@ export default function ThreeBackground({ theme }) {
       // Target watermark: imperceptibly slow rotation (~3 min per revolution)
       // Plus a very subtle breath (scale pulse)
       targetGroup.rotation.z = elapsed * 0.0035;
-      const breathe = 1 + Math.sin(elapsed * 0.25) * 0.008;
+      const isMobile = window.innerWidth < 768;
+      const baseScale = isMobile ? 0.45 : 1.0;
+      const breathe = baseScale + Math.sin(elapsed * 0.25) * (0.008 * baseScale);
       targetGroup.scale.setScalar(breathe);
 
       // Current theme (read once per frame for all color lerps)
