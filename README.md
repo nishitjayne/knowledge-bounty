@@ -1,8 +1,6 @@
 # 🏆 Knowledge Bounty
 
-> **I spun this into the digital ether to gamify human collaboration.** It's a real-time mission board — broadcast complex problems, claim bounties, collaborate via live chat, and earn XP. 
-> 
-> 💻 *(For maximum visual fidelity and the full immersive HUD experience, boot this up on a desktop or laptop.)*
+> **Real-time, gamified task marketplace** — broadcast engineering & business problems, claim missions, collaborate via live chat, and earn XP.
 
 > [!NOTE]
 > **Viewing Purpose Only:** This live instance is configured for viewing and demonstration purposes. A full login system with authentication (such as SSO, OAuth, or custom database credentials) can be easily integrated for any company.
