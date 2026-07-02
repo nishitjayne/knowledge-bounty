@@ -229,7 +229,7 @@ function App() {
           borderColor: `${theme.accent}40`
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-4 mobile-header-inner">
           <header className="flex flex-col sm:flex-row justify-between items-center gap-6 header-flex">
             <div
               className="flex items-center gap-5 cursor-pointer animate-slide-up"
@@ -243,7 +243,7 @@ function App() {
               </h1>
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-3 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="flex flex-wrap justify-center items-center gap-3 animate-slide-up mobile-controls-row" style={{ animationDelay: '0.1s' }}>
               <button
                 onClick={() => {
                   fireButtonAnim(setNavAnim, 350);
@@ -306,7 +306,7 @@ function App() {
                 </button>
                 {showThemePicker && (
                   <div
-                    className="absolute right-0 mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44 z-50"
+                    className="absolute right-0 mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44 z-50 theme-picker-dropdown"
                     style={{ backgroundColor: theme.card, borderColor: theme.accent }}
                   >
                     {Object.keys(THEMES).map(tKey => (
@@ -333,7 +333,7 @@ function App() {
         </div>
       </div>
 
-      <div className="relative z-10 px-4 sm:px-6 md:px-12 pb-16 pt-10">
+      <div className="relative z-10 px-4 sm:px-6 md:px-12 pb-16 pt-10 mobile-main-wrap">
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto">
@@ -408,7 +408,7 @@ function App() {
                   </form>
 
                   {/* Live stats */}
-                  <div className="mt-6 pt-5 border-t flex justify-between text-center" style={{ borderColor: theme.accent }}>
+                  <div className="mt-6 pt-5 border-t flex justify-between text-center mobile-stats-row" style={{ borderColor: theme.accent }}>
                     <div>
                       <div className="text-2xl font-black" style={{ color: theme.highlight }}>{marketplaceBounties.length}</div>
                       <div className="text-xs font-bold uppercase" style={{ color: theme.subText }}>Open</div>
@@ -603,7 +603,7 @@ function BountyCard({ b, onAction, onChat, theme, index, currentUser }) {
 
       <h3 className="text-base sm:text-lg font-black mb-2 leading-tight break-words">{b.title}</h3>
 
-      <div className="flex flex-wrap items-center gap-3 mb-4 text-xs font-bold" style={{ color: theme.subText }}>
+      <div className="flex flex-wrap items-center gap-3 mb-4 text-xs font-bold card-meta" style={{ color: theme.subText }}>
         <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={11} /> {b.reward}</span>
         {b.timeEstimate && <span className="flex items-center gap-1"><Clock size={11} />{b.timeEstimate}</span>}
         <span>by {b.requesterName}</span>
