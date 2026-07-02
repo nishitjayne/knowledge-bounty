@@ -496,12 +496,11 @@ body {
   /* Controls row: spread across full width like a game HUD */
   .mobile-controls-row {
     display: flex !important;
-    flex-wrap: nowrap !important;
-    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 5px !important;
     width: 100% !important;
-    overflow: hidden !important;
   }
   
   .nav-tab {

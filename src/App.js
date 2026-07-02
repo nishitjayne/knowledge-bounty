@@ -229,21 +229,21 @@ function App() {
           borderColor: `${theme.accent}40`
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-4 mobile-header-inner">
-          <header className="flex flex-col sm:flex-row justify-between items-center gap-6 header-flex">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-12 py-2 sm:py-4 mobile-header-inner">
+          <header className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-6 header-flex">
             <div
-              className="flex items-center gap-5 cursor-pointer animate-slide-up"
+              className="flex items-center gap-2 sm:gap-5 cursor-pointer animate-slide-up"
               onClick={() => setView('market')}
             >
-              <div className="p-4 rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
-                <Trophy size={34} className="text-white" />
+              <div className="p-2 sm:p-4 rounded-xl sm:rounded-[1.6rem] shadow-2xl logo-icon animate-float" style={{ backgroundColor: theme.button }}>
+                <Trophy size={20} className="text-white sm-trophy-icon" />
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter uppercase select-none break-words text-center">
+              <h1 className="text-lg sm:text-3xl md:text-4xl font-black italic tracking-tighter uppercase select-none">
                 KNOWLEDGE<span style={{ color: theme.highlight }}>BOUNTY</span>
               </h1>
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-3 animate-slide-up mobile-controls-row" style={{ animationDelay: '0.1s' }}>
+            <div className="flex items-center justify-center gap-1.5 sm:gap-3 animate-slide-up mobile-controls-row w-full sm:w-auto" style={{ animationDelay: '0.1s' }}>
               <button
                 onClick={() => {
                   fireButtonAnim(setNavAnim, 350);
@@ -256,18 +256,19 @@ function App() {
                   color: view === 'admin' ? '#fff' : theme.text
                 }}
               >
-                {view === 'admin' ? '← Market' : 'Dashboard'}
+                <span className="hidden sm:inline">{view === 'admin' ? '← Market' : 'Dashboard'}</span>
+                <span className="sm:hidden">{view === 'admin' ? '← Mkt' : '⚔ Dash'}</span>
               </button>
 
-              {/* User Identity Selector */}
               <div 
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border shadow-xl glass transition-theme identity-selector" 
+                className="flex items-center gap-1 px-2 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-2xl border shadow-lg glass transition-theme identity-selector" 
                 style={{ backgroundColor: theme.card, borderColor: `${theme.accent}30` }}
               >
-                <span className="text-xs font-black uppercase opacity-60 tracking-wider" style={{ color: theme.subText }}>Identity:</span>
+                <span className="hidden sm:inline text-xs font-black uppercase opacity-60 tracking-wider" style={{ color: theme.subText }}>Identity:</span>
+                <span className="sm:hidden text-[0.5rem] font-black uppercase opacity-60" style={{ color: theme.subText }}>ID:</span>
                 <input
                   type="text"
-                  className="bg-transparent border-none outline-none text-sm font-black w-24 text-center cursor-pointer hover:underline"
+                  className="bg-transparent border-none outline-none text-xs sm:text-sm font-black w-14 sm:w-24 text-center cursor-pointer hover:underline"
                   style={{ color: theme.highlight }}
                   value={requesterName}
                   onChange={e => {
@@ -278,49 +279,47 @@ function App() {
                 />
               </div>
 
-              {/* XP Counter */}
               <div key={xpAnimKey} className="animate-count">
                 <button
                   onClick={handleXpClick}
-                  className={`flex items-center gap-1.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl border-2 shadow-xl glass xp-counter ${xpClicked ? 'xp-inferno' : ''}`}
+                  className={`flex items-center gap-1 px-2 sm:px-6 py-1.5 sm:py-3 rounded-lg sm:rounded-2xl border-2 shadow-lg glass xp-counter ${xpClicked ? 'xp-inferno' : ''}`}
                   style={{
                     backgroundColor: theme.card,
                     borderColor: theme.zap,
                     '--zap-rgb': hexToRgb(theme.zap),
                   }}
                 >
-                  <Zap size={18} className="xp-zap-icon relative z-10" style={{ color: theme.zap }} fill="currentColor" />
-                  <span className="text-base sm:text-lg font-black relative z-10 xp-content">{xp} XP</span>
+                  <Zap size={12} className="xp-zap-icon relative z-10" style={{ color: theme.zap }} fill="currentColor" />
+                  <span className="text-xs sm:text-lg font-black relative z-10 xp-content whitespace-nowrap">{xp} XP</span>
                 </button>
               </div>
 
-              {/* Theme Picker */}
               <div className="relative">
                 <button
                   onClick={() => setShowThemePicker(s => !s)}
-                  className="p-3 rounded-2xl shadow-xl border-2 glass theme-btn flex items-center justify-center"
+                  className="p-1.5 sm:p-3 rounded-lg sm:rounded-2xl shadow-lg border-2 glass theme-btn flex items-center justify-center"
                   style={{ backgroundColor: theme.card, borderColor: theme.accent }}
                   title="Change theme"
                 >
-                  <Palette size={20} style={{ color: theme.text }} />
+                  <Palette size={14} style={{ color: theme.text }} />
                 </button>
                 {showThemePicker && (
                   <div
-                    className="absolute right-0 mt-3 p-3 rounded-2xl shadow-2xl flex flex-col gap-1 glass border animate-slide-up w-44 z-50 theme-picker-dropdown"
+                    className="absolute right-0 mt-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-2xl flex flex-col gap-0.5 sm:gap-1 glass border animate-slide-up w-32 sm:w-44 z-50 theme-picker-dropdown"
                     style={{ backgroundColor: theme.card, borderColor: theme.accent }}
                   >
                     {Object.keys(THEMES).map(tKey => (
                       <button
                         key={tKey}
                         onClick={() => { setCurrentTheme(tKey); setShowThemePicker(false); }}
-                        className="px-4 py-2 text-left rounded-xl font-bold capitalize text-sm theme-btn"
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 text-left rounded-lg sm:rounded-xl font-bold capitalize text-xs sm:text-sm theme-btn"
                         style={{
                           color: theme.text,
                           backgroundColor: currentTheme === tKey ? theme.accent : 'transparent'
                         }}
                       >
                         <span className="flex items-center gap-1.5">
-                          {currentTheme === tKey && <CheckCircle2 size={12} />}
+                          {currentTheme === tKey && <CheckCircle2 size={10} />}
                           {THEMES[tKey].name}
                         </span>
                       </button>
