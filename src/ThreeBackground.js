@@ -94,6 +94,7 @@ export default function ThreeBackground({ theme }) {
     const container = mountRef.current;
     const W = window.innerWidth;
     const H = window.innerHeight;
+    const isMobile = W < 768;
 
     // ── Renderer (threejs-fundamentals) ─────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({
@@ -101,7 +102,7 @@ export default function ThreeBackground({ theme }) {
       alpha: true,
       powerPreference: 'low-power',
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.0 : 1.5));
     renderer.setSize(W, H);
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;  // fundamentals: output colorspace
@@ -145,7 +146,7 @@ export default function ThreeBackground({ theme }) {
     const ringGeos   = [];
     RING_RADII.forEach((r, i) => {
       const innerR  = r - 0.018;         // thin ring stroke
-      const ringGeo = new THREE.RingGeometry(innerR, r, 96);
+      const ringGeo = new THREE.RingGeometry(innerR, r, isMobile ? 48 : 96);
       ringGeos.push(ringGeo);
       const ring    = new THREE.Mesh(ringGeo, ringMat);
       // Alternate rings slightly smaller opacity for depth variation
@@ -191,7 +192,7 @@ export default function ThreeBackground({ theme }) {
 
 
     // ── Constellation Points (threejs-geometry: BufferGeometry Points) ───────
-    const STAR_COUNT = 120;
+    const STAR_COUNT = isMobile ? 40 : 120;
     const starGeo    = new THREE.BufferGeometry();
     const starPos    = new Float32Array(STAR_COUNT * 3);
     const starPhase  = new Float32Array(STAR_COUNT);
@@ -233,7 +234,7 @@ export default function ThreeBackground({ theme }) {
     // Subtle bloom — makes the warp mesh edges and star points glow
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(W, H),
-      0.35,   // strength — very subtle, not overwhelming
+      isMobile ? 0.15 : 0.35,   // strength — very subtle, not overwhelming (lower on mobile)
       0.5,    // radius
       0.82,   // threshold — only bright parts bloom
     );
@@ -256,6 +257,17 @@ export default function ThreeBackground({ theme }) {
       springY.target = mouse.ny * 0.08;
     };
     window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    // ── Touch Parallax (threejs-interaction: deviceorientation for mobile) ───
+    const onOrientation = (e) => {
+      if (e.gamma == null || e.beta == null) return;
+      // gamma: -90..90 (left-right tilt), beta: -180..180 (front-back tilt)
+      springX.target = (e.gamma / 90) * 0.08;
+      springY.target = ((e.beta - 45) / 90) * 0.06;  // offset by 45° for natural holding angle
+    };
+    if (isMobile) {
+      window.addEventListener('deviceorientation', onOrientation, { passive: true });
+    }
 
     // ── Resize Handler (threejs-fundamentals: responsive canvas) ─────────────
     const onResize = () => {
@@ -325,6 +337,7 @@ export default function ThreeBackground({ theme }) {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', onMouseMove);
+      if (isMobile) window.removeEventListener('deviceorientation', onOrientation);
       window.removeEventListener('resize',    onResize);
       ringGeos.forEach(g => g.dispose());
       ringMat.dispose();

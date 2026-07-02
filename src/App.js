@@ -208,14 +208,14 @@ function App() {
       {/* Notification toast */}
       {notification && (
         <div
-          className="fixed top-6 left-1/2 z-[100] px-6 py-3 rounded-2xl font-black text-white shadow-2xl glass animate-notification flex items-center gap-2"
+          className="fixed top-4 left-1/2 z-[100] px-4 py-2.5 rounded-xl font-black text-white shadow-2xl glass animate-notification flex items-center gap-2 text-sm max-w-[90vw]"
           style={{ transform: 'translateX(-50%)', backgroundColor: theme.button }}
         >
-          {notification.icon === 'zap'    && <Zap size={16} fill="currentColor" />}
-          {notification.icon === 'radio'  && <Radio size={16} />}
-          {notification.icon === 'trophy' && <Trophy size={16} />}
-          {notification.icon === 'lock'   && <Lock size={16} />}
-          {notification.text}
+          {notification.icon === 'zap'    && <Zap size={14} fill="currentColor" />}
+          {notification.icon === 'radio'  && <Radio size={14} />}
+          {notification.icon === 'trophy' && <Trophy size={14} />}
+          {notification.icon === 'lock'   && <Lock size={14} />}
+          <span className="truncate">{notification.text}</span>
         </div>
       )}
 
@@ -339,8 +339,8 @@ function App() {
         <main className="max-w-7xl mx-auto">
           {view === 'admin' ? (
             <div className="animate-slide-up">
-              <h2 className="text-2xl font-black mb-8 uppercase italic flex items-center gap-3">
-                <Target size={24} style={{ color: theme.highlight }} />
+              <h2 className="text-xl sm:text-2xl font-black mb-4 sm:mb-8 uppercase italic flex items-center gap-2 sm:gap-3">
+                <Target size={20} style={{ color: theme.highlight }} />
                 Active Missions
               </h2>
               {myClaims.length === 0 ? (
@@ -357,7 +357,7 @@ function App() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-10">
 
               {/* Post Form */}
               <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
@@ -459,48 +459,50 @@ function App() {
         />
       )}
 
-      {/* Chat Sidebar */}
+      {/* Chat Sidebar / Comms Panel */}
       {selectedQuest && (
         <aside
           className="fixed top-0 right-0 h-full border-l z-50 flex flex-col glass transition-theme animate-slide-right chat-sidebar"
-          style={{ width: 380, backgroundColor: theme.bg, borderColor: theme.accent }}
+          style={{ width: 'min(380px, 100vw)', backgroundColor: theme.bg, borderColor: theme.accent }}
         >
-          <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: theme.accent }}>
-            <div className="min-w-0 flex-1 pr-4">
-              <h2 className="text-sm font-black uppercase tracking-wider" style={{ color: theme.subText }}>Comms</h2>
-              <p className="font-bold text-sm mt-1 break-words leading-tight">{selectedQuest.title}</p>
-              <div className="flex flex-wrap items-center gap-2 mt-2 text-xs font-bold" style={{ color: theme.subText }}>
-                <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={11} /> {selectedQuest.reward}</span>
-                <span>by {selectedQuest.requesterName}</span>
+          {/* Comms Header */}
+          <div className="flex justify-between items-start p-3 sm:p-5 border-b chat-panel-header" style={{ borderColor: theme.accent }}>
+            <div className="min-w-0 flex-1 pr-3">
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider" style={{ color: theme.subText }}>Comms</h2>
+              <p className="font-bold text-xs sm:text-sm mt-1 break-words leading-tight" style={{ overflowWrap: 'anywhere' }}>{selectedQuest.title}</p>
+              <div className="flex flex-wrap items-center gap-1.5 mt-1.5 text-[0.65rem] sm:text-xs font-bold" style={{ color: theme.subText }}>
+                <span className="flex items-center gap-1" style={{ color: theme.highlight }}><Gift size={10} /> {selectedQuest.reward}</span>
+                <span className="truncate">by {selectedQuest.requesterName}</span>
               </div>
             </div>
             <button
               onClick={closeComms}
-              className="p-2 rounded-xl hover:opacity-80 transition-all flex items-center justify-center flex-shrink-0 self-start mt-1"
+              className="p-1.5 sm:p-2 rounded-lg hover:opacity-80 transition-all flex items-center justify-center flex-shrink-0"
               style={{ color: theme.text, backgroundColor: `${theme.accent}20` }}
               title="Close Comms"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-3">
-            {/* Involved Parties Simulation Tip */}
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-5 space-y-2 sm:space-y-3">
+            {/* Simulation Tip */}
             <div 
-              className="p-3 mb-2 rounded-2xl text-xs font-semibold border flex flex-col gap-1 transition-all"
+              className="p-2.5 mb-1.5 rounded-xl text-[0.65rem] sm:text-xs font-semibold border flex flex-col gap-0.5 transition-all sim-tip"
               style={{ backgroundColor: `${theme.accent}10`, borderColor: `${theme.accent}30`, color: theme.subText }}
             >
-              <div className="flex items-center gap-1.5 font-bold" style={{ color: theme.text }}>
-                <Lightbulb size={13} style={{ color: theme.highlight }} /> Simulation Tip
+              <div className="flex items-center gap-1 font-bold" style={{ color: theme.text }}>
+                <Lightbulb size={11} style={{ color: theme.highlight }} /> Simulation Tip
               </div>
-              <p>
-                To reply as the other party (<strong>{selectedQuest.requesterName === requesterName ? selectedQuest.claimerName || 'Expert' : selectedQuest.requesterName}</strong>), change your user identity in the top header.
+              <p style={{ overflowWrap: 'anywhere' }}>
+                To reply as the other party (<strong>{selectedQuest.requesterName === requesterName ? selectedQuest.claimerName || 'Expert' : selectedQuest.requesterName}</strong>), change your identity in the header.
               </p>
             </div>
 
             {(!selectedQuest.messages || selectedQuest.messages.length === 0) ? (
               <div className="empty-state" style={{ color: theme.subText }}>
-                <p className="text-sm font-bold">No messages yet. Start the conversation!</p>
+                <p className="text-xs sm:text-sm font-bold">No messages yet. Start the conversation!</p>
               </div>
             ) : (
               selectedQuest.messages.map((m, i) => {
@@ -509,9 +511,9 @@ function App() {
                   <div
                     key={i}
                     className={`chat-bubble ${isMe ? 'chat-bubble-expert' : 'chat-bubble-other'}`}
-                    style={{ animationDelay: `${i * 0.05}s` }}
+                    style={{ animationDelay: `${i * 0.05}s`, overflowWrap: 'anywhere' }}
                   >
-                    <div className="text-xs font-bold mb-1 opacity-60">{m.sender}</div>
+                    <div className="text-[0.6rem] sm:text-xs font-bold mb-0.5 opacity-60">{m.sender}</div>
                     {m.text}
                   </div>
                 );
@@ -520,6 +522,7 @@ function App() {
             <div ref={chatEndRef} />
           </div>
 
+          {/* Chat Input */}
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -528,11 +531,11 @@ function App() {
               setMsg('');
               refresh();
             }}
-            className="p-4 border-t flex gap-2"
+            className="p-2.5 sm:p-4 border-t flex gap-2 chat-form"
             style={{ borderColor: theme.accent }}
           >
             <input
-              className="kb-input flex-1 transition-theme"
+              className="kb-input flex-1 transition-theme chat-input"
               style={inputStyle}
               placeholder="Type a message..."
               value={msg}
@@ -540,10 +543,10 @@ function App() {
             />
             <button
               type="submit"
-              className="p-3 rounded-xl transition-all hover:scale-110 active:scale-95"
+              className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl transition-all hover:scale-110 active:scale-95 flex-shrink-0 chat-send-btn"
               style={{ backgroundColor: theme.button, color: '#fff' }}
             >
-              <Send size={18} />
+              <Send size={16} />
             </button>
           </form>
         </aside>
